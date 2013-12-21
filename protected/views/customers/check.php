@@ -76,9 +76,29 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
     </div>
 </div>  
 <?php
-
-
-
+$this->widget('widgets.CJuiDateTimePicker.CJuiDateTimePicker', array(
+    'model' => $model,
+    'attribute' => 'C_name',
+    'mode' => 'time',
+    'options' => array(
+        'timeOnlyTitle' => 'เลือกเวลา',
+        'hourMin' => (int) $hr_open,
+        'hourMax' => (int) $hr_close,
+        'hourGrid' => 1,
+        'minuteGrid' => 10,
+        'timeFormat' => 'hh : mm นาฬิกา',
+        'buttonText' => 'Select',
+        'showAnim' => 'slideDown',
+        'showButtonPanel' => true,
+        'showOn' => 'button',
+        'addSliderAccess' => array('touchonly' => true),
+    ),
+    'htmlOptions' => array(
+        'readonly' => true,
+        'class' => 'input-small',
+        'style' => 'height:20px;background-color:white;',
+    ),
+));
 $this->endWidget();
 ?>
 
