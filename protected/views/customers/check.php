@@ -32,7 +32,9 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
                 <td>
                     <div id="hour">
                         <?php
-                        echo $form->dropDownList($model, 'C_time', $this->HH(), array('class' => 'input-small',
+                        echo $form->dropDownList($model, 'C_time', $this->HH(), array(
+                            'class' => 'input-small',
+                            'id' => 'C_time',
                             'ajax' => array(
                                 'type' => 'POST',
                                 'url' => CController::createUrl('Customers/MM'),
@@ -53,7 +55,7 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
                                 'type' => 'POST',
                                 'url' => CController::createUrl('Customers/All'),
                                 'update' => '#seats',
-                                'data' => array('hour' => 'js:this.value', 'minutes' => 'js:this.value'),
+                                'data' => array('hour' => 'js:$("#C_time").val()', 'minutes' => 'js:this.value'),
                             ),
                             'multiple' => true, 'style' => 'height:180px;
                         '));

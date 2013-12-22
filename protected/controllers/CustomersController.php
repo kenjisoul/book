@@ -163,8 +163,10 @@ class CustomersController extends Controller {
     public function actionAll() {
         Yii::log('received', 'info', 'system.fucking.ajax.check');
         Yii::log(CVarDumper::dumpAsString($_POST), 'info', 'system.fucking.ajax.check');
-        $rs = $_POST['minutes'];
-        print_r($rs);
+        $hr = $_POST['hour'];
+        $min = $_POST['minutes'];
+        print_r($hr[0]);
+        print_r($min);
     }
 
     public function getAvailableSeats() {
