@@ -26,6 +26,7 @@ class CustomersController extends Controller {
      * This is the default 'index' action that is invoked
      * when an action is not explicitly requested by users.
      */
+//index.php
     public function actionIndex() {
         $model = new Customers();
         if (isset($_POST['submit'])) {
@@ -48,16 +49,19 @@ class CustomersController extends Controller {
         }
     }
 
+//admin.php
     public function actionAdmin() {
         $model = new Customers();
         $this->render('admin', array('model' => $model));
     }
 
+//view.php
     public function actionView($name, $time, $seat, $PIN) {
         $model = new Customers();
         $this->render('view', array('model' => $model, 'name' => $name, 'time' => $time, 'seat' => $seat, 'PIN' => $PIN));
     }
 
+//chechk.php
     public function actionCheck() {
         $model = new Customers();
         $r_model = new Restaurant();
@@ -69,6 +73,7 @@ class CustomersController extends Controller {
         $this->render('check', array('model' => $model, 'hr_open' => $open, 'hr_close' => $close));
     }
 
+//Generate PIN
     public function generatePIN() {
         $model = new Customers();
         $number = "1234567890";
@@ -82,6 +87,7 @@ class CustomersController extends Controller {
         }
     }
 
+//Get Restorant Open time - Close time (hour only)
     public function HH() {
         $r_model = new Restaurant();
         $par1 = 'HOUR';
@@ -92,7 +98,7 @@ class CustomersController extends Controller {
         $par1 = 'MINUTE';
         $par2 = 'R_close';
         $m_close = $r_model->getTime($par1, $par2);
-        if($m_close == 00)
+        if ($m_close == 00)
             $close = $close - 1;
         $rs = array();
         for ($i = $open; $i <= $close; $i++) {
@@ -101,6 +107,7 @@ class CustomersController extends Controller {
         return $rs;
     }
 
+//Get Restorant Open time - Close time (minute only)
     public function actionMM() {
         if (isset($_POST['hour']) && $_POST['hour'] != '') {
             $hour = $_POST['hour'];
@@ -131,6 +138,7 @@ class CustomersController extends Controller {
         }
     }
 
+//Set queue number
     public function queue() {
         $model = new Customers();
         $rs = $model->getQ();
@@ -140,16 +148,19 @@ class CustomersController extends Controller {
         return ($data + 1);
     }
 
-    public function restaurant() {
-        $r_model = new Restaurant();
-        $rs = $r_model->getName();
-        $data = array();
-        foreach ($rs as $value) {
-            $data[] = $value;
-        }
-        return $data;
-    }
+//Get restaurant name use for if have many restaurant
+    /*    public function restaurant() {
+      $r_model = new Restaurant();
+      $rs = $r_model->getName();
+      $data = array();
+      foreach ($rs as $value) {
+      $data[] = $value;
+      }
+      return $data;
+      }
+     */
 
+//Get restaurant seat per table
     public function getSeat() {
         $rdetail_model = new RDetails();
         $seats = $rdetail_model->getSeat();
@@ -160,20 +171,64 @@ class CustomersController extends Controller {
         return $rs;
     }
 
+//Check all available table
     public function actionAll() {
-        Yii::log('received', 'info', 'system.fucking.ajax.check');
-        Yii::log(CVarDumper::dumpAsString($_POST), 'info', 'system.fucking.ajax.check');
         $hr = $_POST['hour'];
         $min = $_POST['minutes'];
         print_r($hr[0]);
         print_r($min);
     }
 
-    public function getAvailableSeats() {
-        $name = $_POST['drpMinutes'];
-        return $name;
+//Check is available to service status
+    public function actionStatus() {
+        $hr = $_POST['hour'];
+        $min = $_POST['minutes'];
+        $seat = $_POST['seats'];
+        $model = new Customers();
+        if ($hr == NULL || $min == NULL || $seat == NULL) {
+            ?>
+            <span class="required">
+                <?php echo 'ข้อมูลไม่ครบถ้วน'; ?>
+            </span>
+            <?php
+            echo '</br>';
+            echo '</br>';
+            $this->widget('bootstrap.widgets.TbButton', array(
+                'label' => 'Book',
+                'buttonType' => 'submit',
+                'htmlOptions' => array(
+                    'name' => 'submit',
+                ),
+                'disabled' => true,
+            ));
+        } else if ($model->isAvailable($hr, $min, $seat)) {
+            $this->widget('bootstrap.widgets.TbButton', array(
+                'label' => 'Book',
+                'buttonType' => 'submit',
+                'htmlOptions' => array(
+                    'name' => 'submit',
+                ),
+            ));
+        } else {
+            ?>
+            <span class="required">
+                <?php echo 'เวลา ' . $hr . ':' . $min . 'นาฬิกา โต๊ะสำหรับ ' . $seat . ' ท่าน ' . ' เต็ม'; ?>
+            </span>
+            <?php
+            echo '</br>';
+            echo '</br>';
+            $this->widget('bootstrap.widgets.TbButton', array(
+                'label' => 'Book',
+                'buttonType' => 'submit',
+                'htmlOptions' => array(
+                    'name' => 'submit',
+                ),
+                'disabled' => true,
+            ));
+        }
     }
 
+//Get current time
     public function getTime() {
         date_default_timezone_set("Asia/Bangkok");
         return date("H:i");

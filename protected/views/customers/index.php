@@ -20,7 +20,7 @@ echo $form->textFieldRow($model, 'C_name', array('value' => $namefield));
 ?>
 <div class="control-group">
     <label class="control-label" for="Customers_C_time">
-        เวลาที่จะเข้าบริการ 
+        เวลาที่จะเข้าใช้บริการ
         <span class="required"> * </span>
     </label>
     <div class="controls">
@@ -30,8 +30,9 @@ echo $form->textFieldRow($model, 'C_name', array('value' => $namefield));
                 'type' => 'POST',
                 'url' => CController::createUrl('Customers/MM'),
                 'update' => '#Customers_drpMinute',
-                'data' => array('hour' => 'js:this.value'),
-            ), 'class' => 'input-small',
+                'data' => array('hour' => 'js:this.value')
+            ),
+            'class' => 'input-small',
         ));
 
         echo " : ";
@@ -40,19 +41,40 @@ echo $form->textFieldRow($model, 'C_name', array('value' => $namefield));
         echo $form->error($model, 'drpMinute');
         ?>
     </div>
-</div>  
+</div>
 <?php
 echo $form->dropDownListRow($model, 'C_seats', $this->getSeat(), array('empty' => 'เลือก', 'class' => 'input-small'));
 ?>
-<div class="control-group">
-    <div class="controls">
+<!-- check status button -->
+<div class="control-group" id="status">
+    <label class="control-label" for="Customers_C_time">
+        ตรวจสอบที่นั่ง
+        <span class="required"> * </span>
+    </label>
+    <div class="controls" > 
         <?php
-        echo $form->error($model, 'status');
+        $this->widget('bootstrap.widgets.TbButton', array(
+            'buttonType' => 'button',
+            'type' => '',
+            'label' => 'ตรวจสอบ',
+            'htmlOptions' => array(
+                'ajax' => array(
+                    'type' => 'POST',
+                    'url' => CController::createUrl('Customers/Status'),
+                    'update' => '#submit',
+                    'data' => array(
+                        'hour' => 'js:$("#Customers_C_time").val()',
+                        'minutes' => 'js:$("#Customers_drpMinute").val()',
+                        'seats' => 'js:$("#Customers_C_seats").val()',
+                    )
+                )
+            )
+        ));
         ?>
     </div>
 </div>
 
-<div class="controls" id="submit"> 
+<div class="controls" id="submit">
     <?php
     $this->widget('bootstrap.widgets.TbButton', array(
         'label' => 'Book',
@@ -60,6 +82,7 @@ echo $form->dropDownListRow($model, 'C_seats', $this->getSeat(), array('empty' =
         'htmlOptions' => array(
             'name' => 'submit',
         ),
+        'disabled' => true,
     ));
     ?>
 </div>

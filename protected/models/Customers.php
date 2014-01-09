@@ -20,6 +20,7 @@ class Customers extends CActiveRecord {
     public $drpMinute;  //use in the bootstrap form
     public $Q;
     public $status;
+    public $available;
 
     /**
      * @return string the associated database table name
@@ -130,7 +131,8 @@ class Customers extends CActiveRecord {
     public function isAvailable($hr, $mins, $seats) {
         $r_model = new Restaurant();
         $service = $r_model->getTime("HOUR", "R_service") * 60 + $r_model->getTime("MINUTE", "R_service");
-        $time = $hr . $mins . '00';
+        $time = ($hr * 60) + $mins - $service + 1 ;
+        $time = Customers::Str2Time($time);
         $endtime = ($hr * 60) + $mins + $service;
         $endtime = Customers::Str2Time($endtime);
         $connection = Yii::app()->db;
@@ -141,10 +143,11 @@ class Customers extends CActiveRecord {
         $rs1 = $command1->queryRow();
         $rs2 = $command2->queryRow();
         if ($rs2['t'] <= $rs1['n']) {
-            $this->addError('status', 'เวลา ' . $hr . ':' . $mins . 'นาฬิกา สำหรับ ' . $seats . ' ท่าน ' . ' เต็ม');
+            $this->addError('status', 'เวลา ' . $hr . ':' . $mins . 'นาฬิกา โต๊ะสำหรับ ' . $seats . ' ท่าน ' . ' เต็ม');
             return FALSE;
+        } else {
+            return TRUE;
         }
-        return TRUE;
     }
 
     public function Str2Time($munites) {

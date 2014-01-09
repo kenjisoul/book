@@ -50,15 +50,15 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
                 <td>
                     <div id="minute">
                         <?php
-                        echo $form->dropDownList($model, 'drpMinute', array(), array('class' => 'input-small',
+                        echo $form->dropDownList($model, 'drpMinute', array('empty' => 'เลือก'), array('class' => 'input-small',
                             'ajax' => array(
                                 'type' => 'POST',
                                 'url' => CController::createUrl('Customers/All'),
                                 'update' => '#seats',
                                 'data' => array('hour' => 'js:$("#C_time").val()', 'minutes' => 'js:this.value'),
                             ),
-                            'multiple' => true, 'style' => 'height:180px;
-                        '));
+                            'multiple' => true, 'style' => 'height:180px;')
+                        );
                         ?>
                     </div>
                 </td>
