@@ -100,5 +100,11 @@ class RDetails extends CActiveRecord {
         $result = $command->queryColumn();
         return $result;
     }
-
+    
+    public function getAll(){
+        $connection = Yii::app()->db;
+        $command = $connection->createCommand('SELECT * FROM r_details');
+        $result = $command->queryAll();
+        return $result;
+    }
 }

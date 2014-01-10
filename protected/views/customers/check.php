@@ -22,11 +22,11 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
     <div class = "controls">
         <table>
             <tr align="center">
-                <th>ชัวโมง</th>
+                <th >ชัวโมง</th>
                 <th width = 20px></th>
-                <th>นาที</th>
+                <th >นาที</th>
                 <th width = 20px></th>
-                <th>จำนวนที่ว่าง</th>
+                <th >จำนวนที่ว่าง</th>
             </tr>
             <tr>
                 <td>
@@ -63,44 +63,28 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
                     </div>
                 </td>
                 <td></td>
-                <td>
-                    <div id="seats"></div>
-                </td>
+                <td style="vertical-align: top;" width="60%">
+                    <div id="seats">
+                        <table border="1" width="100%" style="text-align: center">
+                            <tr style="background-color: gainsboro">
+                                <td><b>โต๊ะ (คน / โต๊ะ)</b></td>
+                                <td><b>ว่าง (โต๊ะ)</b></td>
+                            </tr>
+                        </table>
+                    </div>
+                    </tb>
             </tr>
             <tr>
                 <td><?php echo $form->error($model, 'C_time'); ?></td>
                 <td></td>
                 <td><?php echo $form->error($model, 'drpMinute'); ?></td>
                 <td></td>
-                <td></td>
+                <td ></td>
             </tr>
         </table>
     </div>
 </div>  
 <?php
-$this->widget('widgets.CJuiDateTimePicker.CJuiDateTimePicker', array(
-    'model' => $model,
-    'attribute' => 'C_name',
-    'mode' => 'time',
-    'options' => array(
-        'timeOnlyTitle' => 'เลือกเวลา',
-        'hourMin' => (int) $hr_open,
-        'hourMax' => (int) $hr_close,
-        'hourGrid' => 1,
-        'minuteGrid' => 10,
-        'timeFormat' => 'hh : mm นาฬิกา',
-        'buttonText' => 'Select',
-        'showAnim' => 'slideDown',
-        'showButtonPanel' => true,
-        'showOn' => 'button',
-        'addSliderAccess' => array('touchonly' => true),
-    ),
-    'htmlOptions' => array(
-        'readonly' => true,
-        'class' => 'input-small',
-        'style' => 'height:20px;background-color:white;',
-    ),
-));
 $this->endWidget();
 ?>
 

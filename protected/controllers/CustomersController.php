@@ -175,8 +175,26 @@ class CustomersController extends Controller {
     public function actionAll() {
         $hr = $_POST['hour'];
         $min = $_POST['minutes'];
-        print_r($hr[0]);
-        print_r($min);
+        $seat = RDetails::model()->getAll();
+        ?>
+        <table border="1" width="100%" style="text-align: center">
+            <tr style="background-color: gainsboro">
+                <td><b>โต๊ะ (คน / โต๊ะ)</b></td>
+                <td><b>ว่าง (โต๊ะ)</b></td>
+            </tr>
+            <?php
+            foreach ($seat as $value) {
+                $booked = Customers::model()->getBookedSeat($hr, $min, $value['R_seats'])
+                ?>
+                <tr>
+                    <td width="50%"><?php print_r($value['R_seats']); ?></td>
+                    <td width="50%"><?php print_r($value['R_tables'] - $booked); ?></td>
+                </tr>
+                <?php
+            }
+            ?>
+        </table>
+        <?php
     }
 
 //Check is available to service status

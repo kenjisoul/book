@@ -128,10 +128,11 @@ class Customers extends CActiveRecord {
         return false;
     }
 
+    //Check can the restaurant service
     public function isAvailable($hr, $mins, $seats) {
         $r_model = new Restaurant();
         $service = $r_model->getTime("HOUR", "R_service") * 60 + $r_model->getTime("MINUTE", "R_service");
-        $time = ($hr * 60) + $mins - $service + 1 ;
+        $time = ($hr * 60) + $mins - $service + 1;
         $time = Customers::Str2Time($time);
         $endtime = ($hr * 60) + $mins + $service;
         $endtime = Customers::Str2Time($endtime);
@@ -150,6 +151,7 @@ class Customers extends CActiveRecord {
         }
     }
 
+    //Convert minutes to hour.minute
     public function Str2Time($munites) {
         $munites = ceil($munites);
         $string = array();
@@ -186,6 +188,20 @@ class Customers extends CActiveRecord {
         $criteria->compare('PIN', $PIN);
 
         return new CActiveDataProvider($this, array('criteria' => $criteria,));
+    }
+
+    public function getBookedSeat($hr, $mins, $seats) {
+        $r_model = new Restaurant();
+        $service = $r_model->getTime("HOUR", "R_service") * 60 + $r_model->getTime("MINUTE", "R_service");
+        $time = ($hr[0] * 60) + $mins - $service + 1;
+        $time = Customers::Str2Time($time);
+        $endtime = ($hr[0] * 60) + $mins + $service;
+        $endtime = Customers::Str2Time($endtime);
+        $connection = Yii::app()->db;
+        $sql1 = 'SELECT COUNT(C_seats) as n FROM customers WHERE C_time >=' . $time . ' AND C_time < ' . $endtime . ' AND C_seats = ' . $seats . ';';
+        $command1 = $connection->createCommand($sql1);
+        $rs1 = $command1->queryRow();
+        return $rs1['n'];
     }
 
     /**
