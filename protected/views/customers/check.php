@@ -67,8 +67,8 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
                     <div id="seats">
                         <table border="1" width="100%" style="text-align: center">
                             <tr style="background-color: gainsboro">
-                                <td><b>โต๊ะ (คน / โต๊ะ)</b></td>
-                                <td><b>ว่าง (โต๊ะ)</b></td>
+                                <td width="50%"><b>จำนวนที่นั่ง (คน / โต๊ะ)</b></td>
+                                <td width="50%"><b>ว่าง (โต๊ะ)</b></td>
                             </tr>
                         </table>
                     </div>

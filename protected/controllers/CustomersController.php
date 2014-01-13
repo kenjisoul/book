@@ -52,6 +52,11 @@ class CustomersController extends Controller {
 //admin.php
     public function actionAdmin() {
         $model = new Customers();
+        if (isset($_POST['submit'])) {
+            $model->attributes = $_POST['Customers'];
+            $PIN = $model->PIN;
+            $model->setActive($PIN);
+        }
         $this->render('admin', array('model' => $model));
     }
 
@@ -138,7 +143,14 @@ class CustomersController extends Controller {
         }
     }
 
-//Set queue number
+    //pop up body config
+    public function actionBookdetails() {
+        $PIN = $_POST['pin'];
+        $rs = Customers::model()->checkBooker($PIN);
+        $this->renderpartial('_activeform', array('rs' => $rs));
+    }
+
+    //Set queue number
     public function queue() {
         $model = new Customers();
         $rs = $model->getQ();
@@ -148,7 +160,7 @@ class CustomersController extends Controller {
         return ($data + 1);
     }
 
-//Get restaurant name use for if have many restaurant
+    //Get restaurant name use for if have many restaurant
     /*    public function restaurant() {
       $r_model = new Restaurant();
       $rs = $r_model->getName();
@@ -160,7 +172,7 @@ class CustomersController extends Controller {
       }
      */
 
-//Get restaurant seat per table
+    //Get restaurant seat per table
     public function getSeat() {
         $rdetail_model = new RDetails();
         $seats = $rdetail_model->getSeat();
@@ -171,7 +183,7 @@ class CustomersController extends Controller {
         return $rs;
     }
 
-//Check all available table
+    //Check all available table
     public function actionAll() {
         $hr = $_POST['hour'];
         $min = $_POST['minutes'];
@@ -179,7 +191,7 @@ class CustomersController extends Controller {
         ?>
         <table border="1" width="100%" style="text-align: center">
             <tr style="background-color: gainsboro">
-                <td><b>โต๊ะ (คน / โต๊ะ)</b></td>
+                <td><b>จำนวนที่นั่ง (คน / โต๊ะ)</b></td>
                 <td><b>ว่าง (โต๊ะ)</b></td>
             </tr>
             <?php
@@ -193,11 +205,14 @@ class CustomersController extends Controller {
                 <?php
             }
             ?>
+            <tr>
+                <td colspan="2"><?php print_r("เวลาที่เข้าใช้บริการ " . $hr[0] . " : " . $min . " นาฬิกา"); ?></td>
+            </tr>
         </table>
         <?php
     }
 
-//Check is available to service status
+    //Check is available to service status
     public function actionStatus() {
         $hr = $_POST['hour'];
         $min = $_POST['minutes'];
@@ -246,7 +261,7 @@ class CustomersController extends Controller {
         }
     }
 
-//Get current time
+    //Get current time
     public function getTime() {
         date_default_timezone_set("Asia/Bangkok");
         return date("H:i");

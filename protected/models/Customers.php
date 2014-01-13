@@ -177,17 +177,25 @@ class Customers extends CActiveRecord {
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
-            'sort' => array(
-                'defaultOrder' => 'C_time ASC'
+            'sort' => array('defaultOrder' => 'C_time ASC'),
+            'pagination' => array('pageSize' => 10,
             ))
         );
     }
 
-    public function setActive($PIN) {
-        $criteria = new CDbCriteria;
-        $criteria->compare('PIN', $PIN);
+    //query non activated booker
+    public function checkBooker($pin) {
+        $connection = Yii::app()->db;
+        $sql = 'SELECT * FROM customers WHERE PIN =' . $pin . ';';
+        $command = $connection->createCommand($sql);
+        return $command->queryRow();
+    }
 
-        return new CActiveDataProvider($this, array('criteria' => $criteria,));
+    public function setActive($PIN) {
+        $connection = Yii::app()->db;
+        $sql = 'UPDATE ' . Customers::model()->tableName() . ' SET C_active = 1 WHERE PIN = ' . $PIN . ';';
+        $command = $connection->createCommand($sql);
+        $command->execute();
     }
 
     public function getBookedSeat($hr, $mins, $seats) {

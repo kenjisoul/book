@@ -1,8 +1,9 @@
 <?php
 $this->widget('bootstrap.widgets.TbGridView', array(
     'type' => 'striped condensed',
+    'enablePagination' => true,
     'dataProvider' => Customers::model()->getBooker(0),
-    'template' => "{items}",
+    'template' => "{pager}\n{items}\n",
     'columns' => array(
         array(
             'name' => 'C_name',
