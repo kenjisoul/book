@@ -33,14 +33,21 @@ class CustomersController extends Controller {
             $model->attributes = $_POST['Customers'];
             $C_name = $model->C_name;
             $hr = $model->C_time;
+            if ($hr < 10)
+                $hr = '0' . $hr;
             $mins = $model->drpMinute;
-            $C_time = $hr . $mins . "00";
+            $jdate = $model->jdate;
+            $d = substr($jdate, 0, 2);
+            $m = substr($jdate, 5, 2);
+            $y = substr($jdate, 10, 4);
+            $C_time = $y . $m . $d . (string) $hr . $mins . "00";
+            print_r($C_time);
             $C_seats = $model->C_seats;
-            if ($model->isAvailable($hr, $mins, $C_seats)) {
+            if ($model->isAvailable($d, $m, $y, $hr, $mins, $C_seats)) {
                 $PIN = $this->generatePIN();
                 $model = new Customers();
                 $model->book($C_name, $C_time, $C_seats, $PIN);
-                $this->redirect(array('view', 'name' => $C_name, 'time' => $hr . ':' . $mins . ' นาฬิกา', 'seat' => $C_seats, 'PIN' => $PIN));
+                $this->redirect(array('view', 'name' => $C_name, 'jdate' => $d . ' / ' . $m . ' / ' . $y, 'time' => $hr . ':' . $mins . ' นาฬิกา', 'seat' => $C_seats, 'PIN' => $PIN));
             } else {
                 $this->render('index', array('model' => $model, 'namefield' => $C_name));
             }
@@ -61,9 +68,9 @@ class CustomersController extends Controller {
     }
 
 //view.php
-    public function actionView($name, $time, $seat, $PIN) {
+    public function actionView($name, $jdate, $time, $seat, $PIN) {
         $model = new Customers();
-        $this->render('view', array('model' => $model, 'name' => $name, 'time' => $time, 'seat' => $seat, 'PIN' => $PIN));
+        $this->render('view', array('model' => $model, 'name' => $name, 'jdate' => $jdate, 'time' => $time, 'seat' => $seat, 'PIN' => $PIN));
     }
 
 //chechk.php
@@ -143,14 +150,14 @@ class CustomersController extends Controller {
         }
     }
 
-    //pop up body config
+//pop up body config
     public function actionBookdetails() {
         $PIN = $_POST['pin'];
         $rs = Customers::model()->checkBooker($PIN);
         $this->renderpartial('_activeform', array('rs' => $rs));
     }
 
-    //Set queue number
+//Set queue number
     public function queue() {
         $model = new Customers();
         $rs = $model->getQ();
@@ -160,7 +167,7 @@ class CustomersController extends Controller {
         return ($data + 1);
     }
 
-    //Get restaurant name use for if have many restaurant
+//Get restaurant name use for if have many restaurant
     /*    public function restaurant() {
       $r_model = new Restaurant();
       $rs = $r_model->getName();
@@ -172,7 +179,7 @@ class CustomersController extends Controller {
       }
      */
 
-    //Get restaurant seat per table
+//Get restaurant seat per table
     public function getSeat() {
         $rdetail_model = new RDetails();
         $seats = $rdetail_model->getSeat();
@@ -183,10 +190,14 @@ class CustomersController extends Controller {
         return $rs;
     }
 
-    //Check all available table
+//Check all available table
     public function actionAll() {
         $hr = $_POST['hour'];
         $min = $_POST['minutes'];
+        $jdate = $_POST['jdate'];
+        $d = substr($jdate, 0, 2);
+        $m = substr($jdate, 5, 2);
+        $y = substr($jdate, 10, 4);
         $seat = RDetails::model()->getAll();
         ?>
         <table border="1" width="100%" style="text-align: center">
@@ -196,7 +207,7 @@ class CustomersController extends Controller {
             </tr>
             <?php
             foreach ($seat as $value) {
-                $booked = Customers::model()->getBookedSeat($hr, $min, $value['R_seats'])
+                $booked = Customers::model()->getBookedSeat($d, $m, $y, $hr, $min, $value['R_seats'])
                 ?>
                 <tr>
                     <td width="50%"><?php print_r($value['R_seats']); ?></td>
@@ -206,19 +217,23 @@ class CustomersController extends Controller {
             }
             ?>
             <tr>
-                <td colspan="2"><?php print_r("เวลาที่เข้าใช้บริการ " . $hr[0] . " : " . $min . " นาฬิกา"); ?></td>
+                <td colspan="2"><?php print_r("วันที่เข้าใช้บริการ " . $d . ' / ' . $m . ' / ' . $y . ' / ' . ' เวลา ' . $hr[0] . " : " . $min . " นาฬิกา"); ?></td>
             </tr>
         </table>
         <?php
     }
 
-    //Check is available to service status
+//Check is available to service status
     public function actionStatus() {
+        $jdate = $_POST['jdate'];
+        $d = substr($jdate, 0, 2);
+        $m = substr($jdate, 5, 2);
+        $y = substr($jdate, 10, 4);
         $hr = $_POST['hour'];
         $min = $_POST['minutes'];
         $seat = $_POST['seats'];
         $model = new Customers();
-        if ($hr == NULL || $min == NULL || $seat == NULL) {
+        if ($hr == NULL || $min == NULL || $seat == NULL || $jdate == NULL) {
             ?>
             <span class="required">
                 <?php echo 'ข้อมูลไม่ครบถ้วน'; ?>
@@ -234,7 +249,15 @@ class CustomersController extends Controller {
                 ),
                 'disabled' => true,
             ));
-        } else if ($model->isAvailable($hr, $min, $seat)) {
+        } else if ($model->isAvailable($d, $m, $y, $hr, $min, $seat)) {
+            ?>
+            <span style="color:blue ;">
+                <?php echo 'วันที่ ' . $d . ' / ' . $m . ' / ' . $y . ' เวลา ' . $hr . ':' . $min . ' นาฬิกา โต๊ะสำหรับ ' . $seat . ' ท่าน ' . 'สามารถจองได้';
+                ?>
+            </span>
+            <?php
+            echo '</br>';
+            echo '</br>';
             $this->widget('bootstrap.widgets.TbButton', array(
                 'label' => 'Book',
                 'buttonType' => 'submit',
@@ -245,7 +268,7 @@ class CustomersController extends Controller {
         } else {
             ?>
             <span class="required">
-                <?php echo 'เวลา ' . $hr . ':' . $min . 'นาฬิกา โต๊ะสำหรับ ' . $seat . ' ท่าน ' . ' เต็ม'; ?>
+                <?php echo 'วันที่ ' . $d . ' / ' . $m . ' / ' . $y . ' เวลา ' . $hr . ':' . $min . ' นาฬิกา โต๊ะสำหรับ ' . $seat . ' ท่าน ' . ' เต็ม'; ?>
             </span>
             <?php
             echo '</br>';
@@ -261,7 +284,37 @@ class CustomersController extends Controller {
         }
     }
 
-    //Get current time
+//Call Page
+    public function pop1() {
+        $rs = Customers::model()->getpop(1, 0, 0);
+        return $rs;
+    }
+
+//Active Call
+    public function actionCall() {
+        $model = new Customers();
+        $data = $_POST['pin'];
+        foreach ($data as $value) {
+            $model->setcall($value['value']);
+        }
+    }
+
+//Service Booking Page
+    public function pop2() {
+        $rs = Customers::model()->getpop(1, 1, 0);
+        return $rs;
+    }
+
+//Active Call
+    public function actionServBook() {
+        $model = new Customers();
+        $data = $_POST['pin'];
+        foreach ($data as $value) {
+            $model->setserv($value['value']);
+        }
+    }
+
+//Get current time
     public function getTime() {
         date_default_timezone_set("Asia/Bangkok");
         return date("H:i");

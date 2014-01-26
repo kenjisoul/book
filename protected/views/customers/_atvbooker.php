@@ -2,7 +2,7 @@
 $this->widget('bootstrap.widgets.TbGridView', array(
     'type' => 'striped condensed',
     'enablePagination' => true,
-    'dataProvider' => Customers::model()->getBooker(1),
+    'dataProvider' => Customers::model()->getBooker(1,0),   //getBooker($atv, $serv)
     'template' => "{pager}{items}\n",
     'columns' => array(
         array(

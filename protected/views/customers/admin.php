@@ -12,7 +12,7 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
 );
 ?>
 <div class="row" >
-    <div class="span"></div>
+    <div class="span">&nbsp;</div>
     <div class="span8" id="show">
         <?php
         $this->widget('bootstrap.widgets.TbTabs', array(
@@ -26,10 +26,166 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
         ));
         ?>
     </div>
-    <div class="span3" style="vertical-align: central" id="side">
-        asdfasdf
+    <div class="span3" style="text-align: center; margin-top: 36px">
+        <?php
+        $this->widget('bootstrap.widgets.TbButton', array(
+            'id' => 'search',
+            'label' => 'เรียกคิว',
+            'htmlOptions' => array(
+                'style' => 'width: 125px',
+                'data-toggle' => 'modal',
+                'data-target' => '#call'
+            )
+        ));
+        echo "<br/>";
+        echo "<br/>";
+        $this->widget('bootstrap.widgets.TbButton', array(
+            'id' => 'search',
+            'label' => 'เข้ารับบริการ(จองล่วงหน้า)',
+            'htmlOptions' => array(
+                'style' => 'width: 125px',
+                'data-toggle' => 'modal',
+                'data-target' => '#servicebook',
+            )
+        ));
+        echo "<br/>";
+        echo "<br/>";
+        $this->widget('bootstrap.widgets.TbButton', array(
+            'id' => 'search',
+            'label' => 'เข้ารับบริการ(หน้าร้าน)',
+            'htmlOptions' => array(
+                'style' => 'width: 125px',
+                'data-toggle' => 'modal',
+                'data-target' => '#servicenonbook'
+            )
+        ));
+        ?>
     </div>
 </div>
+<?php
+$this->endWidget();
+?>
+
+<!-- Call Queue -->
+<?php
+$this->beginWidget('bootstrap.widgets.TbModal', array('id' => 'call'));
+?>
+
+<div class="modal-header">
+    <a class="close" data-dismiss="modal">&times;</a>
+    <h4>เรียกคิว</h4>
+</div>
+
+<div class="modal-body">
+    <?php $this->renderpartial('_pop1', array('model' => $model)); ?>
+</div>
+
+<div class="modal-footer">
+    <?php
+    $this->widget('bootstrap.widgets.TbButton', array(
+        'type' => 'primary',
+        'label' => 'Save changes',
+        'htmlOptions' => array(
+            'data-dismiss' => 'modal',
+            'ajax' => array(
+                'type' => 'POST',
+                'url' => CController::createUrl('Customers/Call'),
+                'data' => array('pin' => 'js:$("#Customers_callbox:checked").serializeArray()'),
+                "success" => 'js:function(){ location.reload(); }',
+            )
+        ),
+    ));
+    ?>
+    <?php
+    $this->widget('bootstrap.widgets.TbButton', array(
+        'label' => 'Close',
+        'url' => '#',
+        'htmlOptions' => array('data-dismiss' => 'modal'),
+    ));
+    ?>
+</div>
+
+<?php
+$this->endWidget();
+?>
+
+<!-- Service (booking) -->
+<?php
+$this->beginWidget('bootstrap.widgets.TbModal', array('id' => 'servicebook'));
+?>
+
+<div class="modal-header">
+    <a class="close" data-dismiss="modal">&times;</a>
+    <h4>เข้าใช้บริการ (จองล่วงหน้า)</h4>
+</div>
+
+<div class="modal-body">
+    <?php $this->renderpartial('_pop2', array('model' => $model)); ?>
+</div>
+
+<div class="modal-footer">
+    <?php
+    $this->widget('bootstrap.widgets.TbButton', array(
+        'type' => 'primary',
+        'label' => 'Save changes',
+        'htmlOptions' => array(
+            'data-dismiss' => 'modal',
+            'ajax' => array(
+                'type' => 'POST',
+                'url' => CController::createUrl('Customers/ServBook'),
+                'data' => array('pin' => 'js:$("#Customers_servbookbox:checked").serializeArray()'),
+                "success" => 'js:function(){ location.reload(); }',
+            )
+        ),
+    ));
+    ?>
+    <?php
+    $this->widget('bootstrap.widgets.TbButton', array(
+        'label' => 'Close',
+        'url' => '#',
+        'htmlOptions' => array(
+            'data-dismiss' => 'modal',
+        ),
+    ));
+    ?>
+</div>
+
+<?php
+$this->endWidget();
+?>
+
+<!-- Service (non booking) -->
+<?php
+$this->beginWidget('bootstrap.widgets.TbModal', array('id' => 'servicenonbook'));
+?>
+
+<div class="modal-header">
+    <a class="close" data-dismiss="modal">&times;</a>
+    <h4>เข้าใช้บริการ (หน้าร้าน)</h4>
+</div>
+
+<div class="modal-body">
+    <p>Non Booking</p>
+</div>
+
+<div class="modal-footer">
+    <?php
+    $this->widget('bootstrap.widgets.TbButton', array(
+        'type' => 'primary',
+        'label' => 'Save changes',
+        'url' => '#',
+        'htmlOptions' => array('data-dismiss' => 'modal'),
+    ));
+    ?>
+    <?php
+    $this->widget('bootstrap.widgets.TbButton', array(
+        'label' => 'Close',
+        'url' => '#',
+        'htmlOptions' => array('data-dismiss' => 'modal'),
+    ));
+    ?>
+</div>
+
 <?php
 $this->endWidget();
 ?>

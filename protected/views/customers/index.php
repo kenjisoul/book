@@ -20,7 +20,34 @@ echo $form->textFieldRow($model, 'C_name', array('value' => $namefield));
 ?>
 <div class="control-group">
     <label class="control-label" for="Customers_C_time">
-        เวลาที่จะเข้าใช้บริการ
+        วันที่
+        <span class="required"> * </span>
+    </label>
+    <div class="controls">
+        <?php
+        $form->widget('zii.widgets.jui.CJuiDatePicker', array(
+            'model' => $model,
+            'attribute' => 'jdate',
+            'options' => array(
+                'dateFormat' => 'dd / mm / yy',
+                'selectOtherMonths' => true,
+                'autoSize' => true,
+                'minDate' => 0,
+                'maxDate' => "+1M",
+                'showAnim' => 'slideDown',
+            ),
+            'htmlOptions' => array(
+                'class' => 'input-small',
+                'value' => date('d / m / Y'),
+            ),
+        ));
+        ?>
+    </div>
+</div>
+
+<div class="control-group">
+    <label class="control-label" for="Customers_C_time">
+        เวลา
         <span class="required"> * </span>
     </label>
     <div class="controls">
@@ -63,6 +90,7 @@ echo $form->dropDownListRow($model, 'C_seats', $this->getSeat(), array('empty' =
                     'url' => CController::createUrl('Customers/Status'),
                     'update' => '#submit',
                     'data' => array(
+                        'jdate'=> 'js:$("#Customers_jdate").val()',
                         'hour' => 'js:$("#Customers_C_time").val()',
                         'minutes' => 'js:$("#Customers_drpMinute").val()',
                         'seats' => 'js:$("#Customers_C_seats").val()',

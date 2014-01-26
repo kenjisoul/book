@@ -16,11 +16,33 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
 ?>
 <div class = "control-group">
     <label class = "control-label" for = "Customers_C_time">
-        เวลา
+        วันที่ และ เวลา
         <span class = "required"> * </span>
     </label>
     <div class = "controls">
         <table>
+            <tr>
+                <td colspan="5">
+                    <?php
+                    $form->widget('zii.widgets.jui.CJuiDatePicker', array(
+                        'model' => $model,
+                        'attribute' => 'jdate',
+                        'options' => array(
+                            'dateFormat' => 'dd / mm / yy',
+                            'selectOtherMonths' => true,
+                            'autoSize' => true,
+                            'minDate' => 0,
+                            'maxDate' => "+1M",
+                            'showAnim' => 'slideDown',
+                        ),
+                        'htmlOptions' => array(
+                            'class' => 'input-small',
+                            'value' => date('d / m / Y'),
+                        ),
+                    ));
+                    ?>
+                </td>
+            </tr>
             <tr align="center">
                 <th >ชัวโมง</th>
                 <th width = 20px></th>
@@ -55,7 +77,7 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
                                 'type' => 'POST',
                                 'url' => CController::createUrl('Customers/All'),
                                 'update' => '#seats',
-                                'data' => array('hour' => 'js:$("#C_time").val()', 'minutes' => 'js:this.value'),
+                                'data' => array('jdate' => 'js:$("#Customers_jdate").val()', 'hour' => 'js:$("#C_time").val()', 'minutes' => 'js:this.value'),
                             ),
                             'multiple' => true, 'style' => 'height:180px;')
                         );

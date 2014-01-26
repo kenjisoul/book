@@ -20,14 +20,18 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
             <td> <?php echo $name; ?> </td>
         </tr>
         <tr class="even">
+            <th> <?php echo $form->label($model, 'jdate'); ?> </th>
+            <td> <?php echo $jdate; ?> </td>
+        </tr>
+        <tr class="odd">
             <th> <?php echo $form->label($model, 'C_time'); ?> </th>
             <td> <?php echo $time; ?> </td>
         </tr>
-        <tr class="odd">
+        <tr class="even">
             <th> <?php echo $form->label($model, 'C_seats'); ?> </th>
             <td> <?php echo $seat . ' ท่าน'; ?> </td>
         </tr>
-        <tr class="even">
+        <tr class="odd">
             <th> <?php echo $form->label($model, 'PIN'); ?> </th>
             <td> <?php echo $PIN; ?> </td>
         </tr>
