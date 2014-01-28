@@ -159,4 +159,11 @@ class AccountController extends Controller {
         }
     }
 
+    public function getRestaurant() {
+        $r_model = new Restaurant();
+        $data = $r_model->getName();
+        $list = CHtml::listData($data, 'name', 'name');
+        return $list;
+    }
+
 }

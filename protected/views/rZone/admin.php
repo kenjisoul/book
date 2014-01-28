@@ -1,12 +1,12 @@
 <?php
 $this->breadcrumbs=array(
-	'Rdetails'=>array('index'),
+	'Rzones'=>array('index'),
 	'Manage',
 );
 
 $this->menu=array(
-	array('label'=>'List RDetails','url'=>array('index')),
-	array('label'=>'Create RDetails','url'=>array('create')),
+	array('label'=>'List RZone','url'=>array('index')),
+	array('label'=>'Create RZone','url'=>array('create')),
 );
 
 Yii::app()->clientScript->registerScript('search', "
@@ -15,7 +15,7 @@ $('.search-button').click(function(){
 	return false;
 });
 $('.search-form form').submit(function(){
-	$.fn.yiiGridView.update('rdetails-grid', {
+	$.fn.yiiGridView.update('rzone-grid', {
 		data: $(this).serialize()
 	});
 	return false;
@@ -23,7 +23,7 @@ $('.search-form form').submit(function(){
 ");
 ?>
 
-<h1>Manage Rdetails</h1>
+<h1>Manage Rzones</h1>
 
 <p>
 You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>
@@ -38,14 +38,14 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 </div><!-- search-form -->
 
 <?php $this->widget('bootstrap.widgets.TbGridView',array(
-	'id'=>'rdetails-grid',
+	'id'=>'rzone-grid',
 	'dataProvider'=>$model->search(),
 	'filter'=>$model,
 	'columns'=>array(
-		'R_seats',
-		'R_tables',
-		'R_name',
 		'Z_id',
+		'zone',
+		'zone_img',
+		'R_name',
 		array(
 			'class'=>'bootstrap.widgets.TbButtonColumn',
 		),

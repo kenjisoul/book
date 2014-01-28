@@ -12,5 +12,9 @@
 	<?php echo CHtml::encode($data->R_name); ?>
 	<br />
 
+	<b><?php echo CHtml::encode($data->getAttributeLabel('Z_id')); ?>:</b>
+	<?php echo CHtml::encode($data->Z_id); ?>
+	<br />
+
 
 </div>

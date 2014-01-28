@@ -21,5 +21,6 @@ $this->menu=array(
 		'R_seats',
 		'R_tables',
 		'R_name',
+		'Z_id',
 	),
 )); ?>

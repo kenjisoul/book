@@ -28,6 +28,7 @@
                         array('label' => 'จัดการคิว', 'url' => array('/customers/admin'), 'visible' => !Yii::app()->user->isGuest),
                         array('label' => 'Login', 'url' => array('/site/login'), 'visible' => Yii::app()->user->isGuest),
                         array('label' => 'จัดการผู้ใช้', 'url' => array('/account/index'), 'visible' => Yii::app()->user->name == 'admin'),
+                        array('label' => 'โซนร้าน', 'url' => array('/rZone/index'), 'visible' => Yii::app()->user->name == 'admin'),
                         array('label' => 'รายละเอียดร้าน', 'url' => array('/restaurant/index'), 'visible' => Yii::app()->user->name == 'admin'),
                         array('label' => 'จำนวนที่นั่ง ', 'url' => array('/rDetails/index'), 'visible' => Yii::app()->user->name == 'admin'),
                         array('label' => 'Logout (' . Yii::app()->user->name . ')', 'url' => array('/site/logout'), 'visible' => !Yii::app()->user->isGuest)

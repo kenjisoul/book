@@ -7,9 +7,11 @@
  * @property integer $R_seats
  * @property integer $R_tables
  * @property string $R_name
+ * @property integer $Z_id
  *
  * The followings are the available model relations:
- * @property Restaurant $rName
+ * @property RZone $z
+ * @property RZone $rName
  */
 class RDetails extends CActiveRecord {
 
@@ -27,12 +29,12 @@ class RDetails extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('R_seats, R_tables, R_name', 'required'),
-            array('R_seats, R_tables', 'numerical', 'integerOnly' => true),
+            array('R_seats, R_tables, R_name, Z_id', 'required'),
+            array('R_seats, Z_id', 'numerical', 'integerOnly' => true),
             array('R_name', 'length', 'max' => 255),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('R_seats, R_tables, R_name', 'safe', 'on' => 'search'),
+            array('R_seats, R_tables, R_name, Z_id', 'safe', 'on' => 'search'),
         );
     }
 
@@ -43,7 +45,8 @@ class RDetails extends CActiveRecord {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
-            'rName' => array(self::BELONGS_TO, 'Restaurant', 'R_name'),
+            'z' => array(self::BELONGS_TO, 'RZone', 'Z_id'),
+            'rName' => array(self::BELONGS_TO, 'RZone', 'R_name'),
         );
     }
 
@@ -52,9 +55,10 @@ class RDetails extends CActiveRecord {
      */
     public function attributeLabels() {
         return array(
-            'R_seats' => 'R Seats',
-            'R_tables' => 'R Tables',
-            'R_name' => 'R Name',
+            'R_seats' => 'จำนวนที่นั่ง/โต๊ะ',
+            'R_tables' => 'หมายเลขโต๊ะ',
+            'R_name' => 'ชื่อร้าน',
+            'Z_id' => 'Zone',
         );
     }
 
@@ -78,6 +82,7 @@ class RDetails extends CActiveRecord {
         $criteria->compare('R_seats', $this->R_seats);
         $criteria->compare('R_tables', $this->R_tables);
         $criteria->compare('R_name', $this->R_name, true);
+        $criteria->compare('Z_id', $this->Z_id);
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
@@ -100,11 +105,12 @@ class RDetails extends CActiveRecord {
         $result = $command->queryColumn();
         return $result;
     }
-    
-    public function getAll(){
+
+    public function getAll() {
         $connection = Yii::app()->db;
         $command = $connection->createCommand('SELECT * FROM r_details');
         $result = $command->queryAll();
         return $result;
     }
+
 }

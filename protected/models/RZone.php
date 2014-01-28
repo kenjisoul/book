@@ -1,26 +1,24 @@
 <?php
 
 /**
- * This is the model class for table "account".
+ * This is the model class for table "r_zone".
  *
- * The followings are the available columns in table 'account':
- * @property string $A_user
- * @property string $A_pass
- * @property string $A_name
+ * The followings are the available columns in table 'r_zone':
+ * @property integer $Z_id
+ * @property string $zone
+ * @property string $zone_img
  * @property string $R_name
  *
  * The followings are the available model relations:
  * @property Restaurant $rName
  */
-class Account extends CActiveRecord {
-
-    public $A_pass_repeat;
+class RZone extends CActiveRecord {
 
     /**
      * @return string the associated database table name
      */
     public function tableName() {
-        return 'account';
+        return 'r_zone';
     }
 
     /**
@@ -30,22 +28,12 @@ class Account extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('A_user, A_pass, A_name, R_name, A_pass_repeat', 'required'),
-            array('A_user, A_pass, A_name, R_name', 'length', 'max' => 255),
-            array('A_user', 'unique'),
-            array('A_user', 'filter', 'filter' => 'strtolower'),
-            array('A_pass', 'compare', 'message' => 'รหัสผ่านไม่ตรงกัน'),
-            array('A_pass_repeat', 'safe'),
+            array('zone, zone_img, R_name', 'required'),
+            array('zone, zone_img, R_name', 'length', 'max' => 255),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('A_user, A_pass, A_name, R_name', 'safe', 'on' => 'search'),
+            array('Z_id, zone, zone_img, R_name', 'safe', 'on' => 'search'),
         );
-    }
-
-    public function beforeSave() {
-        $pass = MD5($this->A_pass);
-        $this->A_pass = $pass;
-        return true;
     }
 
     /**
@@ -64,11 +52,10 @@ class Account extends CActiveRecord {
      */
     public function attributeLabels() {
         return array(
-            'A_user' => 'Username',
-            'A_pass' => 'Password',
-            'A_name' => 'Name',
-            'R_name' => 'Restaurant',
-            'A_pass_repeat' => 'Repeat Password',
+            'Z_id' => 'id',
+            'zone' => 'Zone',
+            'zone_img' => 'แผนผังโซน',
+            'R_name' => 'ร้าน',
         );
     }
 
@@ -89,8 +76,9 @@ class Account extends CActiveRecord {
 
         $criteria = new CDbCriteria;
 
-        $criteria->compare('A_user', $this->A_user, true);
-        $criteria->compare('A_name', $this->A_name, true);
+        $criteria->compare('Z_id', $this->Z_id);
+        $criteria->compare('zone', $this->zone, true);
+        $criteria->compare('zone_img', $this->zone_img, true);
         $criteria->compare('R_name', $this->R_name, true);
 
         return new CActiveDataProvider($this, array(
@@ -102,10 +90,17 @@ class Account extends CActiveRecord {
      * Returns the static model of the specified AR class.
      * Please note that you should have this exact method in all your CActiveRecord descendants!
      * @param string $className active record class name.
-     * @return Account the static model class
+     * @return RZone the static model class
      */
     public static function model($className = __CLASS__) {
         return parent::model($className);
+    }
+    
+    public function getName(){
+        $connection = Yii::app()->db;
+        $command = $connection->createCommand('SELECT * FROM r_zone');
+        $result = $command->queryAll();
+        return $result;
     }
 
 }

@@ -1,6 +1,6 @@
 <?php
 $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
-    'id' => 'account-form',
+    'id' => 'rzone-form',
     'enableAjaxValidation' => false,
         ));
 ?>
@@ -9,13 +9,9 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
 
 <?php echo $form->errorSummary($model); ?>
 
-<?php echo $form->textFieldRow($model, 'A_user', array('class' => 'span5', 'maxlength' => 255, 'readonly' => ($model->scenario == 'update') ? true : false)); ?>
+<?php echo $form->textFieldRow($model, 'zone', array('class' => 'span5', 'maxlength' => 255)); ?>
 
-<?php echo $form->passwordFieldRow($model, 'A_pass', array('value' => '', 'class' => 'span5', 'maxlength' => 255)); ?>
-
-<?php echo $form->passwordFieldRow($model, 'A_pass_repeat', array('class' => 'span5', 'maxlength' => 256)); ?>    
-
-<?php echo $form->textFieldRow($model, 'A_name', array('class' => 'span5', 'maxlength' => 255)); ?>
+<?php echo $form->textFieldRow($model, 'zone_img', array('class' => 'span5', 'maxlength' => 255)); ?>
 
 <?php echo $form->dropDownListRow($model, 'R_name', $this->getRestaurant(), array('class' => 'input-small')); ?>
 

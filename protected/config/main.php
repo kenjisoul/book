@@ -70,7 +70,7 @@ return array(
           'class' => 'CWebLogRoute',
           ),
           ),
-          ), */
+          ), *//*
         'log' => array(
             'class' => 'CLogRouter',
             'routes' => array(
@@ -78,7 +78,7 @@ return array(
                     'class' => 'ext.yii-debug-toolbar.YiiDebugToolbarRoute',
                 ),
             ),
-        ),
+        ),*/
         'bootstrap' => array(
             'class' => 'bootstrap.components.Bootstrap',
         ),

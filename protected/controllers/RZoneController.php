@@ -1,6 +1,6 @@
 <?php
 
-class RDetailsController extends Controller {
+class RZoneController extends Controller {
 
     /**
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
@@ -57,15 +57,15 @@ class RDetailsController extends Controller {
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
     public function actionCreate() {
-        $model = new RDetails;
+        $model = new RZone;
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
-        if (isset($_POST['RDetails'])) {
-            $model->attributes = $_POST['RDetails'];
+        if (isset($_POST['RZone'])) {
+            $model->attributes = $_POST['RZone'];
             if ($model->save())
-                $this->redirect(array('view', 'id' => $model->R_seats));
+                $this->redirect(array('view', 'id' => $model->Z_id));
         }
 
         $this->render('create', array(
@@ -84,10 +84,10 @@ class RDetailsController extends Controller {
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
-        if (isset($_POST['RDetails'])) {
-            $model->attributes = $_POST['RDetails'];
+        if (isset($_POST['RZone'])) {
+            $model->attributes = $_POST['RZone'];
             if ($model->save())
-                $this->redirect(array('view', 'id' => $model->R_seats));
+                $this->redirect(array('view', 'id' => $model->Z_id));
         }
 
         $this->render('update', array(
@@ -116,7 +116,7 @@ class RDetailsController extends Controller {
      * Lists all models.
      */
     public function actionIndex() {
-        $dataProvider = new CActiveDataProvider('RDetails');
+        $dataProvider = new CActiveDataProvider('RZone');
         $this->render('index', array(
             'dataProvider' => $dataProvider,
         ));
@@ -126,10 +126,10 @@ class RDetailsController extends Controller {
      * Manages all models.
      */
     public function actionAdmin() {
-        $model = new RDetails('search');
+        $model = new RZone('search');
         $model->unsetAttributes();  // clear any default values
-        if (isset($_GET['RDetails']))
-            $model->attributes = $_GET['RDetails'];
+        if (isset($_GET['RZone']))
+            $model->attributes = $_GET['RZone'];
 
         $this->render('admin', array(
             'model' => $model,
@@ -142,7 +142,7 @@ class RDetailsController extends Controller {
      * @param integer the ID of the model to be loaded
      */
     public function loadModel($id) {
-        $model = RDetails::model()->findByPk($id);
+        $model = RZone::model()->findByPk($id);
         if ($model === null)
             throw new CHttpException(404, 'The requested page does not exist.');
         return $model;
@@ -153,7 +153,7 @@ class RDetailsController extends Controller {
      * @param CModel the model to be validated
      */
     protected function performAjaxValidation($model) {
-        if (isset($_POST['ajax']) && $_POST['ajax'] === 'rdetails-form') {
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'rzone-form') {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
@@ -163,13 +163,6 @@ class RDetailsController extends Controller {
         $r_model = new Restaurant();
         $data = $r_model->getName();
         $list = CHtml::listData($data, 'name', 'name');
-        return $list;
-    }
-    
-    public function getZone() {
-        $z_model = new RZone();
-        $data = $z_model->getName();
-        $list = CHtml::listData($data, 'Z_id', 'zone');
         return $list;
     }
 
