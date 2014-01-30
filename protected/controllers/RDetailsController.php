@@ -65,7 +65,7 @@ class RDetailsController extends Controller {
         if (isset($_POST['RDetails'])) {
             $model->attributes = $_POST['RDetails'];
             if ($model->save())
-                $this->redirect(array('view', 'id' => $model->R_seats));
+                $this->redirect(array('view', 'id' => $model->details_id));
         }
 
         $this->render('create', array(
@@ -87,7 +87,7 @@ class RDetailsController extends Controller {
         if (isset($_POST['RDetails'])) {
             $model->attributes = $_POST['RDetails'];
             if ($model->save())
-                $this->redirect(array('view', 'id' => $model->R_seats));
+                $this->redirect(array('view', 'id' => $model->details_id));
         }
 
         $this->render('update', array(
@@ -165,7 +165,7 @@ class RDetailsController extends Controller {
         $list = CHtml::listData($data, 'name', 'name');
         return $list;
     }
-    
+
     public function getZone() {
         $z_model = new RZone();
         $data = $z_model->getName();

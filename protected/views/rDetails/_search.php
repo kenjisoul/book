@@ -3,9 +3,11 @@
 	'method'=>'get',
 )); ?>
 
+	<?php echo $form->textFieldRow($model,'details_id',array('class'=>'span5')); ?>
+
 	<?php echo $form->textFieldRow($model,'R_seats',array('class'=>'span5')); ?>
 
-	<?php echo $form->textFieldRow($model,'R_tables',array('class'=>'span5')); ?>
+	<?php echo $form->textFieldRow($model,'R_tables',array('class'=>'span5','maxlength'=>255)); ?>
 
 	<?php echo $form->textFieldRow($model,'R_name',array('class'=>'span5','maxlength'=>255)); ?>
 

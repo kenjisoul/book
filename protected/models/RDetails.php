@@ -4,8 +4,9 @@
  * This is the model class for table "r_details".
  *
  * The followings are the available columns in table 'r_details':
+ * @property integer $details_id
  * @property integer $R_seats
- * @property integer $R_tables
+ * @property string $R_tables
  * @property string $R_name
  * @property integer $Z_id
  *
@@ -31,10 +32,10 @@ class RDetails extends CActiveRecord {
         return array(
             array('R_seats, R_tables, R_name, Z_id', 'required'),
             array('R_seats, Z_id', 'numerical', 'integerOnly' => true),
-            array('R_name', 'length', 'max' => 255),
+            array('R_tables, R_name', 'length', 'max' => 255),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('R_seats, R_tables, R_name, Z_id', 'safe', 'on' => 'search'),
+            array('details_id, R_seats, R_tables, R_name, Z_id', 'safe', 'on' => 'search'),
         );
     }
 
@@ -55,6 +56,7 @@ class RDetails extends CActiveRecord {
      */
     public function attributeLabels() {
         return array(
+            'details_id' => 'Details',
             'R_seats' => 'จำนวนที่นั่ง/โต๊ะ',
             'R_tables' => 'หมายเลขโต๊ะ',
             'R_name' => 'ชื่อร้าน',
@@ -79,8 +81,9 @@ class RDetails extends CActiveRecord {
 
         $criteria = new CDbCriteria;
 
+        $criteria->compare('details_id', $this->details_id);
         $criteria->compare('R_seats', $this->R_seats);
-        $criteria->compare('R_tables', $this->R_tables);
+        $criteria->compare('R_tables', $this->R_tables, true);
         $criteria->compare('R_name', $this->R_name, true);
         $criteria->compare('Z_id', $this->Z_id);
 

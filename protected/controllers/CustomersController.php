@@ -31,26 +31,27 @@ class CustomersController extends Controller {
         $model = new Customers();
         if (isset($_POST['submit'])) {
             $model->attributes = $_POST['Customers'];
-            $C_name = $model->C_name;
-            $hr = $model->C_time;
-            if ($hr < 10)
-                $hr = '0' . $hr;
-            $mins = $model->drpMinute;
-            $jdate = $model->jdate;
-            $d = substr($jdate, 0, 2);
-            $m = substr($jdate, 5, 2);
-            $y = substr($jdate, 10, 4);
-            $C_time = $y . $m . $d . (string) $hr . $mins . "00";
-            print_r($C_time);
-            $C_seats = $model->C_seats;
-            if ($model->isAvailable($d, $m, $y, $hr, $mins, $C_seats)) {
-                $PIN = $this->generatePIN();
-                $model = new Customers();
-                $model->book($C_name, $C_time, $C_seats, $PIN);
-                $this->redirect(array('view', 'name' => $C_name, 'jdate' => $d . ' / ' . $m . ' / ' . $y, 'time' => $hr . ':' . $mins . ' นาฬิกา', 'seat' => $C_seats, 'PIN' => $PIN));
-            } else {
-                $this->render('index', array('model' => $model, 'namefield' => $C_name));
-            }
+            $seats = $model->C_seats;
+            /* $C_name = $model->C_name;
+              $hr = $model->C_time;
+              if ($hr < 10)
+              $hr = '0' . $hr;
+              $mins = $model->drpMinute;
+              $jdate = $model->jdate;
+              $d = substr($jdate, 0, 2);
+              $m = substr($jdate, 5, 2);
+              $y = substr($jdate, 10, 4);
+              $C_time = $y . $m . $d . (string) $hr . $mins . "00";
+              print_r($C_time);
+              $C_seats = $model->C_seats;
+              if ($model->isAvailable($d, $m, $y, $hr, $mins, $C_seats)) {
+              $PIN = $this->generatePIN();
+              $model = new Customers();
+              $model->book($C_name, $C_time, $C_seats, $PIN);
+              $this->redirect(array('view', 'name' => $C_name, 'jdate' => $d . ' / ' . $m . ' / ' . $y, 'time' => $hr . ':' . $mins . ' นาฬิกา', 'seat' => $C_seats, 'PIN' => $PIN));
+              } else {
+              $this->render('index', array('model' => $model, 'namefield' => $C_name));
+              } */
         } else {
             $this->render('index', array('model' => $model, 'namefield' => ''));
         }
@@ -231,12 +232,11 @@ class CustomersController extends Controller {
         $y = substr($jdate, 10, 4);
         $hr = $_POST['hour'];
         $min = $_POST['minutes'];
-        $seat = $_POST['seats'];
         $model = new Customers();
-        if ($hr == NULL || $min == NULL || $seat == NULL || $jdate == NULL) {
+        if ($hr == NULL || $min == NULL || $jdate == NULL) {
             ?>
             <span class="required">
-                <?php echo 'ข้อมูลไม่ครบถ้วน'; ?>
+            <?php echo 'ข้อมูลไม่ครบถ้วน'; ?>
             </span>
             <?php
             echo '</br>';
@@ -248,39 +248,46 @@ class CustomersController extends Controller {
                     'name' => 'submit',
                 ),
                 'disabled' => true,
-            ));
-        } else if ($model->isAvailable($d, $m, $y, $hr, $min, $seat)) {
-            ?>
-            <span style="color:blue ;">
-                <?php echo 'วันที่ ' . $d . ' / ' . $m . ' / ' . $y . ' เวลา ' . $hr . ':' . $min . ' นาฬิกา โต๊ะสำหรับ ' . $seat . ' ท่าน ' . 'สามารถจองได้';
-                ?>
-            </span>
-            <?php
-            echo '</br>';
-            echo '</br>';
-            $this->widget('bootstrap.widgets.TbButton', array(
-                'label' => 'Book',
-                'buttonType' => 'submit',
-                'htmlOptions' => array(
-                    'name' => 'submit',
-                ),
             ));
         } else {
-            ?>
-            <span class="required">
-                <?php echo 'วันที่ ' . $d . ' / ' . $m . ' / ' . $y . ' เวลา ' . $hr . ':' . $min . ' นาฬิกา โต๊ะสำหรับ ' . $seat . ' ท่าน ' . ' เต็ม'; ?>
-            </span>
-            <?php
-            echo '</br>';
-            echo '</br>';
-            $this->widget('bootstrap.widgets.TbButton', array(
-                'label' => 'Book',
-                'buttonType' => 'submit',
-                'htmlOptions' => array(
-                    'name' => 'submit',
-                ),
-                'disabled' => true,
-            ));
+            //get available table
+            $list = $model->getAvailable($d, $m, $y, $hr, $min);
+            $check_table = 0;
+            foreach ($list as $value) {
+                foreach ($value as $a) {
+                    if ($a['R_tables'] != NULL)
+                        $check_table++;
+                    print_r($a);
+                    echo"<br>";
+                }
+            }
+            print_r($list[0][2]['R_tables']);
+            if ($check_table != 0) {
+                echo'<br>';
+                $this->widget('bootstrap.widgets.TbButton', array(
+                    'label' => 'Book',
+                    'buttonType' => 'submit',
+                    'htmlOptions' => array(
+                        'name' => 'submit',
+                    ))
+                );
+            } else {
+                ?>
+                <span class="required">
+                    <?php echo 'ขออภัย ขณะนี้โต๊ะเต็มหมดแล้วครับ' ?>
+                </span>
+                <?php
+                echo '</br>';
+                echo '</br>';
+                $this->widget('bootstrap.widgets.TbButton', array(
+                    'label' => 'Book',
+                    'buttonType' => 'submit',
+                    'htmlOptions' => array(
+                        'name' => 'submit',
+                    ),
+                    'disabled' => true,
+                ));
+            }
         }
     }
 

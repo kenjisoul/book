@@ -69,9 +69,6 @@ echo $form->textFieldRow($model, 'C_name', array('value' => $namefield));
         ?>
     </div>
 </div>
-<?php
-echo $form->dropDownListRow($model, 'C_seats', $this->getSeat(), array('empty' => 'เลือก', 'class' => 'input-small'));
-?>
 <!-- check status button -->
 <div class="control-group" id="status">
     <label class="control-label" for="Customers_C_time">
@@ -93,7 +90,6 @@ echo $form->dropDownListRow($model, 'C_seats', $this->getSeat(), array('empty' =
                         'jdate'=> 'js:$("#Customers_jdate").val()',
                         'hour' => 'js:$("#Customers_C_time").val()',
                         'minutes' => 'js:$("#Customers_drpMinute").val()',
-                        'seats' => 'js:$("#Customers_C_seats").val()',
                     )
                 )
             )

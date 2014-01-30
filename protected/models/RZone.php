@@ -14,6 +14,8 @@
  */
 class RZone extends CActiveRecord {
 
+    private $Cache;
+
     /**
      * @return string the associated database table name
      */
@@ -30,6 +32,7 @@ class RZone extends CActiveRecord {
         return array(
             array('zone, zone_img, R_name', 'required'),
             array('zone, zone_img, R_name', 'length', 'max' => 255),
+            array('zone_img', 'file', 'types' => 'jpg, gif, png', 'allowEmpty' => true, 'on' => 'update'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('Z_id, zone, zone_img, R_name', 'safe', 'on' => 'search'),
@@ -95,12 +98,19 @@ class RZone extends CActiveRecord {
     public static function model($className = __CLASS__) {
         return parent::model($className);
     }
-    
-    public function getName(){
+
+    public function getName() {
         $connection = Yii::app()->db;
         $command = $connection->createCommand('SELECT * FROM r_zone');
         $result = $command->queryAll();
         return $result;
+    }
+
+    public function getNextID() {
+        $connection = Yii::app()->db;
+        $command = $connection->createCommand('SELECT MAX(Z_id) FROM r_zone');
+        $result = $command->queryColumn();
+        return $result[0] + 1;
     }
 
 }

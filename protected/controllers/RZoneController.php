@@ -1,5 +1,7 @@
 <?php
 
+header('Content-Type: text/html; charset=utf-8');
+
 class RZoneController extends Controller {
 
     /**
@@ -64,8 +66,16 @@ class RZoneController extends Controller {
 
         if (isset($_POST['RZone'])) {
             $model->attributes = $_POST['RZone'];
-            if ($model->save())
+            $uploadedFile = CUploadedFile::getInstance($model, 'zone_img');
+            $type = substr($uploadedFile, -4);
+            $name = $model->getNextID() . $type;
+            $fileName = "{$name}";
+            $model->zone_img = $fileName;
+            if ($model->save()) {
+                $uploadedFile->saveAs(Yii::app()->basePath . '/zone image/' . $fileName);
+                //$model->zone_img->save(Yii::app()->basePath.'/zone images/'.$fileName);
                 $this->redirect(array('view', 'id' => $model->Z_id));
+            }
         }
 
         $this->render('create', array(
@@ -84,10 +94,20 @@ class RZoneController extends Controller {
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
+        $uploadedFile = CUploadedFile::getInstance($model, 'zone_img');
+
         if (isset($_POST['RZone'])) {
             $model->attributes = $_POST['RZone'];
             if ($model->save())
-                $this->redirect(array('view', 'id' => $model->Z_id));
+                if (!empty($uploadedFile)) {  // check if uploaded file is set or not
+                    $type = substr($uploadedFile, -4);
+                    $name = $model->Z_id . $type;
+                    $fileName = "{$name}";
+                    $model->zone_img = $fileName;
+                    unlink(Yii::app()->basePath . '/zone image/' . $fileName);
+                    $uploadedFile->saveAs(Yii::app()->basePath . '/zone image/' . $fileName);
+                }
+            $this->redirect(array('view', 'id' => $model->Z_id));
         }
 
         $this->render('update', array(
@@ -103,11 +123,12 @@ class RZoneController extends Controller {
     public function actionDelete($id) {
         if (Yii::app()->request->isPostRequest) {
             // we only allow deletion via POST request
+            unlink(Yii::app()->basePath . '/zone image/' . $this->loadModel($id)->zone_img);
             $this->loadModel($id)->delete();
-
             // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-            if (!isset($_GET['ajax']))
+            if (!isset($_GET['ajax'])) {
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+            }
         } else
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
     }

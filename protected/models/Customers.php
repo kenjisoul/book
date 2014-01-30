@@ -41,9 +41,9 @@ class Customers extends CActiveRecord {
 // will receive user inputs.
         return array(
             array('C_name', 'required', 'message' => 'กรุณาใส่ชื่อผู้รับบริการ'),
-            array('C_seats', 'required', 'message' => 'กรุณาเลือกจำนวนผู้เข้ารับบริการ'),
+            array('C_seats', 'required', 'message' => 'กรุณาเลือกโต๊ะ'),
             array('C_time, drpMinute, jdate', 'required', 'message' => 'กรุณาเลือกวันที่และเวลา'),
-            array('Q_number, C_seats', 'numerical', 'integerOnly' => true),
+            array('Q_number, Z_id', 'numerical', 'integerOnly' => true),
             array('PIN', 'length', 'max' => 4),
             array('C_name, R_name', 'length', 'max' => 255),
             // The following rule is used by search().
@@ -58,7 +58,9 @@ class Customers extends CActiveRecord {
     public function relations() {
 // NOTE: you may need to adjust the relation name and the related
 // class name for the relations automatically generated below.
-        return array();
+        return array(
+            'rName' => array(self::BELONGS_TO, 'Restaurant', 'R_name'),
+        );
     }
 
     /**
@@ -69,13 +71,14 @@ class Customers extends CActiveRecord {
             'Q_number' => 'Q Number',
             'PIN' => 'PIN',
             'C_name' => 'ชื่อผู้รับบริการ',
-            'C_seats' => 'จำนวนผู้เข้ารับบริการ',
+            'C_seats' => 'หมายเลขโต๊ะ',
             'C_time' => 'เวลา',
             'C_active' => 'C Active',
             'C_call' => 'C call',
             'C_service' => 'C service',
             'R_name' => 'R Name',
-            'jdate' => 'วันที่'
+            'jdate' => 'วันที่',
+            'Z_id' => 'Zone'
         );
     }
 
@@ -135,7 +138,113 @@ class Customers extends CActiveRecord {
         return false;
     }
 
-    //Check can the restaurant service
+//show available zone and table
+    public function getAvailable($d, $m, $y, $hr, $mins) {
+        $r_model = new Restaurant();
+        $service = $r_model->getTime("HOUR", "R_service") * 60 + $r_model->getTime("MINUTE", "R_service");
+        $time = ($hr * 60) + $mins - $service + 1;
+        $time = Customers::Str2Time($time);
+        $endtime = ($hr * 60) + $mins + $service;
+        $endtime = Customers::Str2Time($endtime);
+        $connection = Yii::app()->db;
+        $t1 = $y . $m . $d . $time;    // start time
+        $t2 = $y . $m . $d . $endtime;   // end time
+        $sql1 = 'SELECT C_seats FROM customers WHERE C_time >= ' . $t1 . ' AND C_time < ' . $t2 . ';';
+        $command1 = $connection->createCommand($sql1);
+        $data1 = $command1->queryAll();
+        if ($data1 != NULL) {
+            $zone_table = Customers::model()->splitZoneTableString($data1);
+            $i = 0;
+            $list = array();
+            foreach ($zone_table as $zvalue) {
+                if ($zvalue != NULL) {
+                    //Query zone table detail
+                    $sql2 = 'SELECT R_seats, R_tables, zone, zone_img, d.Z_id FROM r_details as d INNER JOIN r_zone as z on d.Z_id = z.Z_id WHERE d.Z_id = ' . $i . ' ;';
+                    $command2 = $connection->createCommand($sql2);
+                    $rs2 = $command2->queryAll();
+                    $j = 0;
+                    foreach ($rs2 as $value) {
+                        $rs2[$j]['R_tables'] = Customers::model()->splitString($value['R_tables']);
+                        $k = 0;
+                        foreach ($rs2[$j]['R_tables'] as $v) {
+                            foreach ($zvalue as $z) {
+                                if ($v == $z) {
+                                    $rs2[$j]['R_tables'][$k] = NULL;
+                                    $rs2[$j]['R_tables'] = array_filter($rs2[$j]['R_tables']);
+                                    break;
+                                }
+                            }
+                            $k++;
+                        }
+                        $j++;
+                    }
+                    $list[] = $rs2;
+                }
+                $i++;
+            }
+            return $list;
+        } else {
+            $sql2 = 'SELECT Z_id FROM r_zone ;';
+            $command2 = $connection->createCommand($sql2);
+            $zid = $command2->queryAll();
+            $list = array();
+            foreach ($zid as $zvalue) {
+                $sql2 = 'SELECT R_seats, R_tables, zone, zone_img, d.Z_id FROM r_details as d INNER JOIN r_zone as z on d.Z_id = z.Z_id WHERE d.Z_id = ' . $zvalue['Z_id'] . ' ;';
+                $command2 = $connection->createCommand($sql2);
+                $rs2 = $command2->queryAll();
+                $i = 0;
+                foreach ($rs2 as $value) {
+                    $rs2[$i]['R_tables'] = Customers::model()->splitString($value['R_tables']);
+                    $i++;
+                }
+                $list[] = $rs2;
+            }
+            return $list;
+        }
+    }
+
+//use to split zone details R_tables
+    public function splitString($string) {
+        $token = strtok($string, ",");
+        while ($token != false) {
+            $tmp[] = $token;
+            $token = strtok(",");
+        }
+        return $tmp;
+    }
+
+//Use to split booking C_seats to zone => table_no
+    public function splitZoneTableString($string) {
+        $rs1 = array();
+        foreach ($string as $value) {
+            $rs1[] = $value;
+        }
+        $tmp = array();
+        foreach ($rs1 as $value) {
+            $token = strtok($value['C_seats'], ",");
+            while ($token != false) {
+                $tmp[] = $token;
+                $token = strtok(",");
+            }
+        }
+        $i = 0;
+        $zone_table = array(array());
+        foreach ($tmp as $v) {
+            $token = strtok($v, "-");
+            while ($token != false) {
+                if ($i % 2 == 1) {
+                    $zone_table[$n][] = $token;
+                } else {
+                    $n = $token;
+                }
+                $token = strtok("-");
+                $i = $i + 1;
+            }
+        }
+        return $zone_table;
+    }
+
+//Check can the restaurant service
     public function isAvailable($d, $m, $y, $hr, $mins, $seats) {
         $r_model = new Restaurant();
         $service = $r_model->getTime("HOUR", "R_service") * 60 + $r_model->getTime("MINUTE", "R_service");
@@ -160,7 +269,7 @@ class Customers extends CActiveRecord {
         }
     }
 
-    //Convert minutes to hour.minute
+//Convert minutes to hour.minute
     public function Str2Time($munites) {
         $munites = ceil($munites);
         $string = array();
@@ -193,7 +302,7 @@ class Customers extends CActiveRecord {
         );
     }
 
-    //query non activated booker
+//query non activated booker
     public function checkBooker($pin) {
         $connection = Yii::app()->db;
         $sql = 'SELECT * FROM customers WHERE PIN =' . $pin . ';';
@@ -224,7 +333,7 @@ class Customers extends CActiveRecord {
         return $rs1['n'];
     }
 
-    //query activated booker
+//query activated booker
     public function getpop($atv, $call, $serv) {
         $connection = Yii::app()->db;
         $sql = 'SELECT * FROM customers WHERE C_active = ' . $atv . ' AND C_call = ' . $call . ' AND C_service = ' . $serv . ' ;';
@@ -232,7 +341,7 @@ class Customers extends CActiveRecord {
         return $command->queryAll();
     }
 
-    //set PIN is called and add show display
+//set PIN is called and add show display
     public function setcall($pin) {
         $connection = Yii::app()->db;
         $sql = 'UPDATE ' . Customers::model()->tableName() . ' SET C_call = 1 WHERE PIN = ' . $pin . ';';
@@ -243,7 +352,7 @@ class Customers extends CActiveRecord {
         $command->execute();
     }
 
-    //set that PIN is serviced and remove show display
+//set that PIN is serviced and remove show display
     public function setserv($pin) {
         if ($pin != NULL) {
             $connection = Yii::app()->db;

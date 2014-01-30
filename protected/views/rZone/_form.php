@@ -2,6 +2,7 @@
 $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
     'id' => 'rzone-form',
     'enableAjaxValidation' => false,
+    'htmlOptions' => array('enctype' => 'multipart/form-data')
         ));
 ?>
 
@@ -9,11 +10,11 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
 
 <?php echo $form->errorSummary($model); ?>
 
+<?php echo $form->dropDownListRow($model, 'R_name', $this->getRestaurant(), array('class' => 'input-small')); ?>
+
 <?php echo $form->textFieldRow($model, 'zone', array('class' => 'span5', 'maxlength' => 255)); ?>
 
-<?php echo $form->textFieldRow($model, 'zone_img', array('class' => 'span5', 'maxlength' => 255)); ?>
-
-<?php echo $form->dropDownListRow($model, 'R_name', $this->getRestaurant(), array('class' => 'input-small')); ?>
+<?php echo $form->fileFieldRow($model, 'zone_img'); ?>
 
 <div class="form-actions">
     <?php
