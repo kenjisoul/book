@@ -13,9 +13,6 @@
  * @property Restaurant $rName
  */
 class RZone extends CActiveRecord {
-
-    private $Cache;
-
     /**
      * @return string the associated database table name
      */

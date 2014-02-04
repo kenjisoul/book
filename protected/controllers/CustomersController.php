@@ -31,20 +31,19 @@ class CustomersController extends Controller {
         $model = new Customers();
         if (isset($_POST['submit'])) {
             $model->attributes = $_POST['Customers'];
-            $seats = $model->C_seats;
-            /* $C_name = $model->C_name;
-              $hr = $model->C_time;
-              if ($hr < 10)
-              $hr = '0' . $hr;
-              $mins = $model->drpMinute;
-              $jdate = $model->jdate;
-              $d = substr($jdate, 0, 2);
-              $m = substr($jdate, 5, 2);
-              $y = substr($jdate, 10, 4);
-              $C_time = $y . $m . $d . (string) $hr . $mins . "00";
-              print_r($C_time);
-              $C_seats = $model->C_seats;
-              if ($model->isAvailable($d, $m, $y, $hr, $mins, $C_seats)) {
+            $C_name = $model->C_name;
+            $hr = $model->C_time;
+            if ($hr < 10)
+                $hr = '0' . $hr;
+            $mins = $model->drpMinute;
+            $jdate = $model->jdate;
+            $d = substr($jdate, 0, 2);
+            $m = substr($jdate, 5, 2);
+            $y = substr($jdate, 10, 4);
+            $C_time = $y . $m . $d . (string) $hr . $mins . "00";
+            $C_seats = $model->C_seats;
+            print_r($C_seats);
+            /* if ($model->isAvailable($d, $m, $y, $hr, $mins, $C_seats)) {
               $PIN = $this->generatePIN();
               $model = new Customers();
               $model->book($C_name, $C_time, $C_seats, $PIN);
@@ -201,26 +200,26 @@ class CustomersController extends Controller {
         $y = substr($jdate, 10, 4);
         $seat = RDetails::model()->getAll();
         ?>
-        <table border="1" width="100%" style="text-align: center">
-            <tr style="background-color: gainsboro">
-                <td><b>จำนวนที่นั่ง (คน / โต๊ะ)</b></td>
-                <td><b>ว่าง (โต๊ะ)</b></td>
-            </tr>
-            <?php
-            foreach ($seat as $value) {
-                $booked = Customers::model()->getBookedSeat($d, $m, $y, $hr, $min, $value['R_seats'])
-                ?>
-                <tr>
-                    <td width="50%"><?php print_r($value['R_seats']); ?></td>
-                    <td width="50%"><?php print_r($value['R_tables'] - $booked); ?></td>
-                </tr>
-                <?php
-            }
+        < table border = "1" width = "100%" style = "text-align: center" >
+        < tr style = "background-color: gainsboro" >
+        < td > < b > จำนวนที่นั่ง (คน / โต๊ะ) < /b></td >
+        < td > < b > ว่าง (โต๊ะ) < /b></td >
+        < /tr>
+        <?php
+        foreach ($seat as $value) {
+            $booked = Customers::model()->getBookedSeat($d, $m, $y, $hr, $min, $value['R_seats'])
             ?>
-            <tr>
-                <td colspan="2"><?php print_r("วันที่เข้าใช้บริการ " . $d . ' / ' . $m . ' / ' . $y . ' / ' . ' เวลา ' . $hr[0] . " : " . $min . " นาฬิกา"); ?></td>
-            </tr>
-        </table>
+            < tr >
+            < td width = "50%" ><?php print_r($value['R_seats']); ?> < /td>
+            < td width = "50%" ><?php print_r($value['R_tables'] - $booked); ?> < /td>
+            < /tr>
+            <?php
+        }
+        ?>
+        < tr >
+        < td colspan = "2" ><?php print_r("วันที่เข้าใช้บริการ " . $d . ' / ' . $m . ' / ' . $y . ' / ' . ' เวลา ' . $hr[0] . " : " . $min . " นาฬิกา"); ?> < /td>
+        < /tr>
+        < /table>
         <?php
     }
 
@@ -235,8 +234,8 @@ class CustomersController extends Controller {
         $model = new Customers();
         if ($hr == NULL || $min == NULL || $jdate == NULL) {
             ?>
-            <span class="required">
-            <?php echo 'ข้อมูลไม่ครบถ้วน'; ?>
+            <span class = "required" >
+                <?php echo 'ข้อมูลไม่ครบถ้วน'; ?>
             </span>
             <?php
             echo '</br>';
@@ -254,16 +253,38 @@ class CustomersController extends Controller {
             $list = $model->getAvailable($d, $m, $y, $hr, $min);
             $check_table = 0;
             foreach ($list as $value) {
-                foreach ($value as $a) {
-                    if ($a['R_tables'] != NULL)
+                foreach ($value as $zone_list) {
+                    if ($zone_list['R_tables'] != NULL) {
                         $check_table++;
-                    print_r($a);
-                    echo"<br>";
+                        $tmp[$zone_list['Z_id']][$zone_list['R_seats']][0] = $zone_list['zone'];
+                        $tmp[$zone_list['Z_id']][$zone_list['R_seats']][1] = $zone_list['R_seats'];
+                        foreach ($zone_list['R_tables'] as $number) {
+                            $tmp[$zone_list['Z_id']][$zone_list['R_seats']][$zone_list['Z_id'] . '-' . $number] = $number;
+                        }
+                    }
                 }
             }
-            print_r($list[0][2]['R_tables']);
+
+
             if ($check_table != 0) {
-                echo'<br>';
+                foreach ($tmp as $value) {
+                    $count_loop = 0;
+                    foreach ($value as $tmp2) {
+                        if ($count_loop == 0) {
+                            echo '<font size=5><b>' . $tmp2[0] . '</b></font><br>';
+                        }
+                        echo '<b>สำหรับ ' . $tmp2[1] . ' ท่าน / โต๊ะ</b>';
+                        $tmp3 = array_reverse($tmp2);
+                        array_pop($tmp3);
+                        array_pop($tmp3);
+                        $tmp2 = array_reverse($tmp3);
+                        echo $form = $this->Widget('bootstrap.widgets.TbActiveForm')->checkBoxListInlineRow($model, 'C_seats', $tmp2);
+                        echo '<br>';
+                        $count_loop++;
+                    }
+                    $count_loop = 0;
+                    echo '<br>';
+                }
                 $this->widget('bootstrap.widgets.TbButton', array(
                     'label' => 'Book',
                     'buttonType' => 'submit',
@@ -273,9 +294,9 @@ class CustomersController extends Controller {
                 );
             } else {
                 ?>
-                <span class="required">
-                    <?php echo 'ขออภัย ขณะนี้โต๊ะเต็มหมดแล้วครับ' ?>
-                </span>
+                < span class = "required" >
+                <?php echo 'ขออภัย ขณะนี้โต๊ะเต็มหมดแล้วครับ' ?>
+                < /span>
                 <?php
                 echo '</br>';
                 echo '</br>';

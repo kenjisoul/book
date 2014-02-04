@@ -28,6 +28,7 @@ echo $form->textFieldRow($model, 'C_name', array('value' => $namefield));
         $form->widget('zii.widgets.jui.CJuiDatePicker', array(
             'model' => $model,
             'attribute' => 'jdate',
+            'language' => 'th',
             'options' => array(
                 'dateFormat' => 'dd / mm / yy',
                 'selectOtherMonths' => true,
@@ -87,10 +88,10 @@ echo $form->textFieldRow($model, 'C_name', array('value' => $namefield));
                     'url' => CController::createUrl('Customers/Status'),
                     'update' => '#submit',
                     'data' => array(
-                        'jdate'=> 'js:$("#Customers_jdate").val()',
+                        'jdate' => 'js:$("#Customers_jdate").val()',
                         'hour' => 'js:$("#Customers_C_time").val()',
                         'minutes' => 'js:$("#Customers_drpMinute").val()',
-                    )
+                    ),
                 )
             )
         ));

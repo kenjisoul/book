@@ -77,7 +77,11 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
                                 'type' => 'POST',
                                 'url' => CController::createUrl('Customers/All'),
                                 'update' => '#seats',
-                                'data' => array('jdate' => 'js:$("#Customers_jdate").val()', 'hour' => 'js:$("#C_time").val()', 'minutes' => 'js:this.value'),
+                                'data' => array(
+                                    'jdate' => 'js:$("#Customers_jdate").val()', 
+                                    'hour' => 'js:$("#C_time").val()', 
+                                    'minutes' => 'js:this.value'
+                                    ),
                             ),
                             'multiple' => true, 'style' => 'height:180px;')
                         );
