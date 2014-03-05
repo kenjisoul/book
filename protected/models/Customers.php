@@ -25,6 +25,7 @@ class Customers extends CActiveRecord {
     public $servbookbox;
     public $servnonbookbox;
     public $jdate;
+    public $seat;
 
     /**
      * @return string the associated database table name

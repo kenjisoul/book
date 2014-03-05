@@ -278,8 +278,9 @@ class CustomersController extends Controller {
                         array_pop($tmp3);
                         array_pop($tmp3);
                         $tmp2 = array_reverse($tmp3);
-                        echo $form = $this->Widget('bootstrap.widgets.TbActiveForm')->checkBoxListInlineRow($model, 'C_seats', $tmp2);
-                        echo '<br>';
+                        echo $form = $this->Widget('bootstrap.widgets.TbActiveForm')->checkBoxListInlineRow($model, 'C_seats[]', $tmp2, array('labelOptions' => array("label" => false)));
+                        echo '<br/>';
+                        echo '<br/>';
                         $count_loop++;
                     }
                     $count_loop = 0;
