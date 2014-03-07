@@ -104,7 +104,9 @@ class RZoneController extends Controller {
                     $name = $model->Z_id . $type;
                     $fileName = "{$name}";
                     $model->zone_img = $fileName;
-                    unlink(Yii::app()->basePath . '/zone image/' . $fileName);
+                    if (file_exists(Yii::app()->basePath . '/zone image/' . $fileName)) {
+                        unlink(Yii::app()->basePath . '/zone image/' . $fileName);
+                    }
                     $uploadedFile->saveAs(Yii::app()->basePath . '/zone image/' . $fileName);
                 }
             $this->redirect(array('view', 'id' => $model->Z_id));
