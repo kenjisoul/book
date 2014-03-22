@@ -68,10 +68,16 @@ class RZoneController extends Controller {
             $model->attributes = $_POST['RZone'];
             $uploadedFile = CUploadedFile::getInstance($model, 'zone_img');
             $type = substr($uploadedFile, -4);
-            $name = $model->getNextID() . $type;
+            $name = $model->getID() . $type;
             $fileName = "{$name}";
             $model->zone_img = $fileName;
             if ($model->save()) {
+                $name = $model->getID() . $type;
+                $fileName = "{$name}";
+                $model->save($model->zone_img = $fileName);
+                if (file_exists(Yii::app()->basePath . '/zone image/' . $fileName)) {
+                        unlink(Yii::app()->basePath . '/zone image/' . $fileName);
+                    }
                 $uploadedFile->saveAs(Yii::app()->basePath . '/zone image/' . $fileName);
                 //$model->zone_img->save(Yii::app()->basePath.'/zone images/'.$fileName);
                 $this->redirect(array('view', 'id' => $model->Z_id));
@@ -107,6 +113,7 @@ class RZoneController extends Controller {
                     if (file_exists(Yii::app()->basePath . '/zone image/' . $fileName)) {
                         unlink(Yii::app()->basePath . '/zone image/' . $fileName);
                     }
+                    $model->save($model->zone_img = $fileName);
                     $uploadedFile->saveAs(Yii::app()->basePath . '/zone image/' . $fileName);
                 }
             $this->redirect(array('view', 'id' => $model->Z_id));

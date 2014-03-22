@@ -103,11 +103,11 @@ class RZone extends CActiveRecord {
         return $result;
     }
 
-    public function getNextID() {
+    public function getID() {
         $connection = Yii::app()->db;
         $command = $connection->createCommand('SELECT MAX(Z_id) FROM r_zone');
         $result = $command->queryColumn();
-        return $result[0] + 1;
+        return $result[0];
     }
 
 }
