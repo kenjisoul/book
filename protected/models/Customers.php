@@ -116,7 +116,8 @@ class Customers extends CActiveRecord {
     public function book($C_name, $C_time, $C_seats, $PIN) {
         $connection = Yii::app()->db;
         $Q_number = Customers::getQ();
-        $sql = 'INSERT INTO customers (Q_number, C_name, C_seats, C_time, PIN) VALUE ( ' . $Q_number . ', \'' . $C_name . '\', ' . $C_seats . ' , ' . $C_time . ', \'' . $PIN . '\')';
+        $restaurant = Restaurant::model()->getName();
+        $sql = 'INSERT INTO customers (Q_number, C_name, C_seats, C_time, PIN, R_name) VALUE ( ' . $Q_number . ', \'' . $C_name . '\', \'' . $C_seats . '\' , ' . $C_time . ', \'' . $PIN . '\',\'' . $restaurant[0]['name'] . '\')';
         $command = $connection->createCommand($sql);
         $command->execute();
     }
@@ -154,12 +155,13 @@ class Customers extends CActiveRecord {
         $command1 = $connection->createCommand($sql1);
         $data1 = $command1->queryAll();
         if ($data1 != NULL) {
-            $zone_table = Customers::model()->splitZoneTableString($data1);
+            $zone_table = Customers::model()->splitcommaZoneTableString($data1);
+            $zone_table = Customers::model()->splitdashZoneTableString($zone_table);
             $i = 0;
             $list = array();
             foreach ($zone_table as $zvalue) {
                 if ($zvalue != NULL) {
-                    //Query zone table detail
+                    //Query zone table detail with out booked
                     $sql2 = 'SELECT R_seats, R_tables, zone, zone_img, d.Z_id FROM r_details as d INNER JOIN r_zone as z on d.Z_id = z.Z_id WHERE d.Z_id = ' . $i . ' ;';
                     $command2 = $connection->createCommand($sql2);
                     $rs2 = $command2->queryAll();
@@ -215,7 +217,7 @@ class Customers extends CActiveRecord {
     }
 
 //Use to split booking C_seats to zone => table_no
-    public function splitZoneTableString($string) {
+    public function splitcommaZoneTableString($string) {
         $rs1 = array();
         foreach ($string as $value) {
             $rs1[] = $value;
@@ -228,6 +230,10 @@ class Customers extends CActiveRecord {
                 $token = strtok(",");
             }
         }
+        return $tmp;
+    }
+
+    public function splitdashZoneTableString($tmp) {
         $i = 0;
         $zone_table = array(array());
         foreach ($tmp as $v) {
@@ -245,7 +251,7 @@ class Customers extends CActiveRecord {
         return $zone_table;
     }
 
-//Check can the restaurant service
+//Check can restaurant service
     public function isAvailable($d, $m, $y, $hr, $mins, $seats) {
         $r_model = new Restaurant();
         $service = $r_model->getTime("HOUR", "R_service") * 60 + $r_model->getTime("MINUTE", "R_service");
@@ -256,18 +262,31 @@ class Customers extends CActiveRecord {
         $connection = Yii::app()->db;
         $t1 = $y . $m . $d . $time;    // start time
         $t2 = $y . $m . $d . $endtime;   // end time
-        $sql1 = 'SELECT COUNT(C_seats) as n FROM customers WHERE C_time >= ' . $t1 . ' AND C_time < ' . $t2 . ' AND C_seats = ' . $seats . ';';
-        $sql2 = 'SELECT R_tables as t FROM r_details WHERE R_seats = ' . $seats . ';';
+        $sql1 = 'SELECT C_seats FROM customers WHERE C_time >= ' . $t1 . ' AND C_time < ' . $t2 . ';';
         $command1 = $connection->createCommand($sql1);
-        $command2 = $connection->createCommand($sql2);
-        $rs1 = $command1->queryRow();
-        $rs2 = $command2->queryRow();
-        if ($rs2['t'] <= $rs1['n']) {
-            $this->addError('status', 'วันที่ ' . $d . ' / ' . $m . ' / ' . $y . 'เวลา ' . $hr . ':' . $mins . 'นาฬิกา โต๊ะสำหรับ ' . $seats . ' ท่าน ' . ' เต็ม');
-            return FALSE;
-        } else {
-            return TRUE;
+        $data1 = $command1->queryAll();
+        $check_seat = array();
+        $token = strtok($seats, ",");
+        while ($token != false) {
+            $check_seat[] = $token;
+            $token = strtok(",");
         }
+        $booked_seat = Customers::model()->splitcommaZoneTableString($data1);
+        foreach ($booked_seat as $value) {
+            foreach ($check_seat as $vaue2) {
+                if ($vaue2 === $value) {
+                    $this->addError('status', 'วันที่ ' . $d . ' / ' . $m . ' / ' . $y . 'เวลา ' . $hr . ':' . $mins . 'นาฬิกา');
+                    return FALSE;
+                }
+            }
+        }
+        return TRUE;
+        /* if ($rs2['t'] <= $rs1['n']) {
+          $this->addError('status', 'วันที่ ' . $d . ' / ' . $m . ' / ' . $y . 'เวลา ' . $hr . ':' . $mins . 'นาฬิกา โต๊ะสำหรับ ' . $seats . ' ท่าน ' . ' เต็ม');
+          return FALSE;
+          } else {
+          return TRUE;
+          } */
     }
 
 //Convert minutes to hour.minute

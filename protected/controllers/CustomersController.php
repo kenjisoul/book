@@ -29,6 +29,8 @@ class CustomersController extends Controller {
 //index.php
     public function actionIndex() {
         $model = new Customers();
+        $r_zone = new RZone();
+        $data = $r_zone->getName();
         if (isset($_POST['submit'])) {
             $model->attributes = $_POST['Customers'];
             $C_name = $model->C_name;
@@ -42,17 +44,25 @@ class CustomersController extends Controller {
             $y = substr($jdate, 10, 4);
             $C_time = $y . $m . $d . (string) $hr . $mins . "00";
             $C_seats = $model->C_seats;
-            print_r($C_seats);
-            /* if ($model->isAvailable($d, $m, $y, $hr, $mins, $C_seats)) {
+            $seats_tmp = NULL;
+            foreach ($C_seats as $value) {
+                if ($value != NULL && $seats_tmp == NULL) {
+                    $seats_tmp = $value;
+                }
+                else if ($value != NULL && $seats_tmp != NULL) {
+                    $seats_tmp = $seats_tmp . ',' . $value;
+                }
+            }
+            if ($model->isAvailable($d, $m, $y, $hr, $mins, $seats_tmp)) {
               $PIN = $this->generatePIN();
               $model = new Customers();
-              $model->book($C_name, $C_time, $C_seats, $PIN);
-              $this->redirect(array('view', 'name' => $C_name, 'jdate' => $d . ' / ' . $m . ' / ' . $y, 'time' => $hr . ':' . $mins . ' นาฬิกา', 'seat' => $C_seats, 'PIN' => $PIN));
+              $model->book($C_name, $C_time, $seats_tmp, $PIN);
+              $this->redirect(array('view', 'name' => $C_name, 'jdate' => $d . ' / ' . $m . ' / ' . $y, 'time' => $hr . ':' . $mins . ' นาฬิกา', 'seat' => $seats_tmp, 'PIN' => $PIN));
               } else {
-              $this->render('index', array('model' => $model, 'namefield' => $C_name));
-              } */
+              $this->render('index', array('model' => $model, 'namefield' => $C_name, 'zone' => $data));
+              } 
         } else {
-            $this->render('index', array('model' => $model, 'namefield' => ''));
+            $this->render('index', array('model' => $model, 'namefield' => '', 'zone' => $data));
         }
     }
 
@@ -235,7 +245,7 @@ class CustomersController extends Controller {
         if ($hr == NULL || $min == NULL || $jdate == NULL) {
             ?>
             <span class = "required" >
-                <?php echo 'ข้อมูลไม่ครบถ้วน'; ?>
+            <?php echo 'ข้อมูลไม่ครบถ้วน'; ?>
             </span>
             <?php
             echo '</br>';
@@ -271,20 +281,19 @@ class CustomersController extends Controller {
                     $count_loop = 0;
                     foreach ($value as $tmp2) {
                         if ($count_loop == 0) {
-                            echo '<font size=5><b>' . $tmp2[0] . '</b></font><br>';
+                            echo '<font size=5><b>' . $tmp2[0] . '</b></font><br/>';
                         }
-                        echo '<b>สำหรับ ' . $tmp2[1] . ' ท่าน / โต๊ะ</b>';
+                        echo '<b>สำหรับ ' . $tmp2[1] . ' ท่าน / โต๊ะ</b> ';
                         $tmp3 = array_reverse($tmp2);
                         array_pop($tmp3);
                         array_pop($tmp3);
                         $tmp2 = array_reverse($tmp3);
-                        echo $form = $this->Widget('bootstrap.widgets.TbActiveForm')->checkBoxListInlineRow($model, 'C_seats[]', $tmp2, array('labelOptions' => array("label" => false)));
-                        echo '<br/>';
-                        echo '<br/>';
+                        echo $form = $this->Widget('bootstrap.widgets.TbActiveForm')->checkBoxListInlineRow($model, 'C_seats[]', $tmp2, array('labelOptions' => array('label' => false)));
                         $count_loop++;
+                        echo '<br/>';
                     }
                     $count_loop = 0;
-                    echo '<br>';
+                    echo '<br/>';
                 }
                 $this->widget('bootstrap.widgets.TbButton', array(
                     'label' => 'Book',

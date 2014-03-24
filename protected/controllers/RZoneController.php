@@ -75,10 +75,12 @@ class RZoneController extends Controller {
                 $name = $model->getID() . $type;
                 $fileName = "{$name}";
                 $model->save($model->zone_img = $fileName);
-                if (file_exists(Yii::app()->basePath . '/zone image/' . $fileName)) {
-                        unlink(Yii::app()->basePath . '/zone image/' . $fileName);
-                    }
-                $uploadedFile->saveAs(Yii::app()->basePath . '/zone image/' . $fileName);
+                if (file_exists(Yii::app()->basePath . '/../zone image/' . $fileName)) {
+                    unlink(Yii::app()->basePath . '/../zone image/' . $fileName);
+                }
+                $uploadedFile->saveAs(Yii::app()->basePath . '/../zone image/' . $fileName);
+                //call resize function send filename
+                $this->ImageResize($fileName);
                 //$model->zone_img->save(Yii::app()->basePath.'/zone images/'.$fileName);
                 $this->redirect(array('view', 'id' => $model->Z_id));
             }
@@ -110,11 +112,13 @@ class RZoneController extends Controller {
                     $name = $model->Z_id . $type;
                     $fileName = "{$name}";
                     $model->zone_img = $fileName;
-                    if (file_exists(Yii::app()->basePath . '/zone image/' . $fileName)) {
-                        unlink(Yii::app()->basePath . '/zone image/' . $fileName);
+                    if (file_exists(Yii::app()->basePath . '/../zone image/' . $fileName)) {
+                        unlink(Yii::app()->basePath . '/../zone image/' . $fileName);
                     }
                     $model->save($model->zone_img = $fileName);
-                    $uploadedFile->saveAs(Yii::app()->basePath . '/zone image/' . $fileName);
+                    $uploadedFile->saveAs(Yii::app()->basePath . '/../zone image/' . $fileName);
+                    //call resize function send filename
+                    $this->ImageResize($fileName);
                 }
             $this->redirect(array('view', 'id' => $model->Z_id));
         }
@@ -132,7 +136,9 @@ class RZoneController extends Controller {
     public function actionDelete($id) {
         if (Yii::app()->request->isPostRequest) {
             // we only allow deletion via POST request
-            unlink(Yii::app()->basePath . '/zone image/' . $this->loadModel($id)->zone_img);
+            if (file_exists(Yii::app()->basePath . '/../zone image/' . $this->loadModel($id)->zone_img)) {
+                unlink(Yii::app()->basePath . '/../zone image/' . $this->loadModel($id)->zone_img);
+            }
             $this->loadModel($id)->delete();
             // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
             if (!isset($_GET['ajax'])) {
@@ -194,6 +200,49 @@ class RZoneController extends Controller {
         $data = $r_model->getName();
         $list = CHtml::listData($data, 'name', 'name');
         return $list;
+    }
+
+    public function ImageResize($img) {
+        $images = Yii::app()->basePath . '/../zone image/' . $img;
+        $size = GetimageSize($images);
+        $new_images = Yii::app()->basePath . '/../zone image/tmp';
+        $width = 300; //*** Fix Width & Heigh (Autu caculate) ***//
+        $height = round($width * $size[1] / $size[0]);
+        switch ($size['mime']) {
+            case "image/gif":
+                $new_images .= '.gif';
+                $images_orig = imagecreatefromgif($images);
+                $photoX = ImagesX($images_orig);
+                $photoY = ImagesY($images_orig);
+                $images_fin = ImageCreateTrueColor($width, $height);
+                ImageCopyResampled($images_fin, $images_orig, 0, 0, 0, 0, $width + 1, $height + 1, $photoX, $photoY);
+                imagegif($images_fin, $new_images);
+                rename($new_images, $images);
+                break;
+            case "image/jpeg":
+                $new_images .= '.jpg';
+                $images_orig = ImageCreateFromJPEG($images);
+                $photoX = ImagesX($images_orig);
+                $photoY = ImagesY($images_orig);
+                $images_fin = ImageCreateTrueColor($width, $height);
+                ImageCopyResampled($images_fin, $images_orig, 0, 0, 0, 0, $width + 1, $height + 1, $photoX, $photoY);
+                ImageJPEG($images_fin, $new_images);
+                rename($new_images, $images);
+                break;
+            case "image/png":
+                $new_images .= '.png';
+                $images_orig = imagecreatefrompng($images);
+                $photoX = ImagesX($images_orig);
+                $photoY = ImagesY($images_orig);
+                $images_fin = ImageCreateTrueColor($width, $height);
+                ImageCopyResampled($images_fin, $images_orig, 0, 0, 0, 0, $width + 1, $height + 1, $photoX, $photoY);
+                imagepng($images_fin, $new_images);
+                rename($new_images, $images);
+                break;
+        }
+        //free image from memory
+        ImageDestroy($images_orig);
+        ImageDestroy($images_fin);
     }
 
 }

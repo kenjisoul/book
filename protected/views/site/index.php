@@ -26,3 +26,8 @@ $this->beginWidget('bootstrap.widgets.TbHeroUnit', array(
     the <a href="http://www.yiiframework.com/doc/">documentation</a>.
     Feel free to ask in the <a href="http://www.yiiframework.com/forum/">forum</a>,
     should you have any questions.</p>
+
+<?php
+$rs = Restaurant::model()->getName();
+echo $rs[0]['name'];
+?>
