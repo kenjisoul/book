@@ -1,3 +1,14 @@
+<script type="text/javascript">
+    window.onload = setupRefresh;
+
+    function setupRefresh() {
+        setTimeout("refreshPage();", 60000); // milliseconds
+    }
+    function refreshPage() {
+        window.location = location.href;
+    }
+</script> 
+
 <?php
 $this->breadcrumbs = array(
     'จัดการข้อมูลผู้จอง'

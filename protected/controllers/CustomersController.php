@@ -48,19 +48,18 @@ class CustomersController extends Controller {
             foreach ($C_seats as $value) {
                 if ($value != NULL && $seats_tmp == NULL) {
                     $seats_tmp = $value;
-                }
-                else if ($value != NULL && $seats_tmp != NULL) {
+                } else if ($value != NULL && $seats_tmp != NULL) {
                     $seats_tmp = $seats_tmp . ',' . $value;
                 }
             }
             if ($model->isAvailable($d, $m, $y, $hr, $mins, $seats_tmp)) {
-              $PIN = $this->generatePIN();
-              $model = new Customers();
-              $model->book($C_name, $C_time, $seats_tmp, $PIN);
-              $this->redirect(array('view', 'name' => $C_name, 'jdate' => $d . ' / ' . $m . ' / ' . $y, 'time' => $hr . ':' . $mins . ' นาฬิกา', 'seat' => $seats_tmp, 'PIN' => $PIN));
-              } else {
-              $this->render('index', array('model' => $model, 'namefield' => $C_name, 'zone' => $data));
-              } 
+                $PIN = $this->generatePIN();
+                $model = new Customers();
+                $model->book($C_name, $C_time, $seats_tmp, $PIN);
+                $this->redirect(array('view', 'name' => $C_name, 'jdate' => $d . ' / ' . $m . ' / ' . $y, 'time' => $hr . ':' . $mins . ' นาฬิกา', 'seat' => $seats_tmp, 'PIN' => $PIN));
+            } else {
+                $this->render('index', array('model' => $model, 'namefield' => $C_name, 'zone' => $data));
+            }
         } else {
             $this->render('index', array('model' => $model, 'namefield' => '', 'zone' => $data));
         }
@@ -210,27 +209,74 @@ class CustomersController extends Controller {
         $y = substr($jdate, 10, 4);
         $seat = RDetails::model()->getAll();
         ?>
-        < table border = "1" width = "100%" style = "text-align: center" >
-        < tr style = "background-color: gainsboro" >
-        < td > < b > จำนวนที่นั่ง (คน / โต๊ะ) < /b></td >
-        < td > < b > ว่าง (โต๊ะ) < /b></td >
-        < /tr>
-        <?php
-        foreach ($seat as $value) {
-            $booked = Customers::model()->getBookedSeat($d, $m, $y, $hr, $min, $value['R_seats'])
-            ?>
-            < tr >
-            < td width = "50%" ><?php print_r($value['R_seats']); ?> < /td>
-            < td width = "50%" ><?php print_r($value['R_tables'] - $booked); ?> < /td>
-            < /tr>
+        <table border = "1" width = "100%" style = "text-align: center" >
+            <tr style = "background-color: gainsboro" >
+                <td> <b> โซน </b></td>
+                <td> <b> จำนวนที่นั่ง (คน / โต๊ะ) </b></td >
+                <td> <b> ว่าง (โต๊ะ) </b></td >
+            </tr>
             <?php
-        }
-        ?>
-        < tr >
-        < td colspan = "2" ><?php print_r("วันที่เข้าใช้บริการ " . $d . ' / ' . $m . ' / ' . $y . ' / ' . ' เวลา ' . $hr[0] . " : " . $min . " นาฬิกา"); ?> < /td>
-        < /tr>
-        < /table>
+            $booked = Customers::model()->getAvailable($d, $m, $y, $hr[0], $min);
+            foreach ($booked as $v1) {
+                foreach ($v1 as $v2) {
+                    if ($v2['R_tables'] != NULL) {
+                        //$tmp = array[Z_id, R_seats,  ]
+                        $tmp[$v2['Z_id']][$v2['R_seats']][0] = $v2['zone'];
+                        $tmp[$v2['Z_id']][$v2['R_seats']][1] = $v2['R_seats'];
+                        foreach ($v2['R_tables'] as $number) {
+                            $tmp[$v2['Z_id']][$v2['R_seats']][$v2['Z_id'] . '-' . $number] = $number;
+                        }
+                    }
+                }
+            }
+            foreach ($tmp as $value) {
+                $count_loop = 0;
+                foreach ($value as $tmp2) {
+                    //$tmp2[0] is zone name
+                    //$tmp2[1] is people seat per table
+                    ?>
+                    <tr >
+                        <td width = "25%" >
+                            <?php
+                            if ($count_loop == 0) {
+                                echo $tmp2[0];
+                                $count_loop++;
+                            }
+                            ?>
+                        </td>
+                        <td width = "50%" >
+                            <?php echo $tmp2[1]; ?> 
+                        </td>
+                        <td width = "25%" >
+                            <?php
+                            $tmp3 = array_reverse($tmp2);
+                            array_pop($tmp3);
+                            array_pop($tmp3);
+                            $tmp2 = array_reverse($tmp3);
+                            $count_table = 0;
+                            foreach ($tmp2 as $tmp3) {
+                                $count_table++;
+                            }
+                            echo $count_table;
+                            $count_table = 0;
+                            ?> 
+                        </td>
+                    </tr>
+                    <?php
+                }
+                $count_loop = 0;
+            }
+            ?>
+            <tr >
+                <td colspan = "3" ><?php print_r("วันที่เข้าใช้บริการ <br/>" . $d . ' / ' . $m . ' / ' . $y . '<br/>เวลา ' . $hr[0] . " : " . $min . " นาฬิกา"); ?> </td>
+            </tr>
+        </table>
         <?php
+    }
+
+//Count table of seat
+    public function CountSeat($seat, $compared) {
+        
     }
 
 //Check is available to service status
@@ -245,7 +291,7 @@ class CustomersController extends Controller {
         if ($hr == NULL || $min == NULL || $jdate == NULL) {
             ?>
             <span class = "required" >
-            <?php echo 'ข้อมูลไม่ครบถ้วน'; ?>
+                <?php echo 'ข้อมูลไม่ครบถ้วน'; ?>
             </span>
             <?php
             echo '</br>';
@@ -259,7 +305,7 @@ class CustomersController extends Controller {
                 'disabled' => true,
             ));
         } else {
-            //get available table
+//get available table
             $list = $model->getAvailable($d, $m, $y, $hr, $min);
             $check_table = 0;
             foreach ($list as $value) {
@@ -275,20 +321,21 @@ class CustomersController extends Controller {
                 }
             }
 
-
+            print_r($tmp);
             if ($check_table != 0) {
                 foreach ($tmp as $value) {
                     $count_loop = 0;
                     foreach ($value as $tmp2) {
+                        //echo zone name
                         if ($count_loop == 0) {
-                            echo '<font size=5><b>' . $tmp2[0] . '</b></font><br/>';
+                            echo '<font size=5><b>' . $tmp2[0] . '</b></font> (ดูตำแหน่งที่นั่งได้จากรูป)<br/>';
                         }
-                        echo '<b>สำหรับ ' . $tmp2[1] . ' ท่าน / โต๊ะ</b> ';
+                        echo '<b>สำหรับ ' . $tmp2[1] . ' ท่าน / โต๊ะ</b>';
                         $tmp3 = array_reverse($tmp2);
                         array_pop($tmp3);
                         array_pop($tmp3);
                         $tmp2 = array_reverse($tmp3);
-                        echo $form = $this->Widget('bootstrap.widgets.TbActiveForm')->checkBoxListInlineRow($model, 'C_seats[]', $tmp2, array('labelOptions' => array('label' => false)));
+                        echo $this->Widget('bootstrap.widgets.TbActiveForm')->checkBoxListInlineRow($model, 'C_seats[]', $tmp2, array('labelOptions' => array('label' => false)));
                         $count_loop++;
                         echo '<br/>';
                     }

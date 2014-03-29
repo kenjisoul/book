@@ -43,7 +43,9 @@ class Customers extends CActiveRecord {
         return array(
             array('C_name', 'required', 'message' => 'กรุณาใส่ชื่อผู้รับบริการ'),
             array('C_seats', 'required', 'message' => 'กรุณาเลือกโต๊ะ'),
-            array('C_time, drpMinute, jdate', 'required', 'message' => 'กรุณาเลือกวันที่และเวลา'),
+            array('jdate', 'required', 'message' => 'กรุณาเลือกวันที่'),
+            array('C_time', 'required', 'message' => 'กรุณาเลือกเวลา'),
+            array('drpMinute', 'required', 'message' => 'กรุณาเลือกนาที'),
             array('Q_number, Z_id', 'numerical', 'integerOnly' => true),
             array('PIN', 'length', 'max' => 4),
             array('C_name, R_name', 'length', 'max' => 255),
@@ -310,9 +312,12 @@ class Customers extends CActiveRecord {
     }
 
     public function getBooker($atv, $serv) {
+        date_default_timezone_set('Asia/Bangkok');
+        $time = date('Y-m-d H:i:s');
         $criteria = new CDbCriteria;
         $criteria->compare('C_active', $atv);
         $criteria->compare('C_service', $serv);
+        $criteria->compare('C_time >',$time);
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
@@ -325,7 +330,9 @@ class Customers extends CActiveRecord {
 //query non activated booker
     public function checkBooker($pin) {
         $connection = Yii::app()->db;
-        $sql = 'SELECT * FROM customers WHERE PIN =' . $pin . ';';
+        date_default_timezone_set('Asia/Bangkok');
+        $time = date('Y-m-d H:i:s');
+        $sql = 'SELECT * FROM customers WHERE PIN =\'' . $pin . '\''. 'and C_time >= \''.$time.'\';';
         $command = $connection->createCommand($sql);
         return $command->queryRow();
     }
@@ -347,10 +354,10 @@ class Customers extends CActiveRecord {
         $connection = Yii::app()->db;
         $t1 = $y . $m . $d . $time;    // start time
         $t2 = $y . $m . $d . $endtime;   // end time
-        $sql1 = 'SELECT COUNT(C_seats) as n FROM customers WHERE C_time >=' . $t1 . ' AND C_time < ' . $t2 . ' AND C_seats = ' . $seats . ';';
+        $sql1 = 'SELECT C_seats FROM customers WHERE C_time >=' . $t1 . ' AND C_time < ' . $t2 . ';';
         $command1 = $connection->createCommand($sql1);
-        $rs1 = $command1->queryRow();
-        return $rs1['n'];
+        $rs1 = $command1->queryAll();
+        return $rs1;
     }
 
 //query activated booker

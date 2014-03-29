@@ -122,7 +122,7 @@ $this->breadcrumbs = array(
         foreach ($zone as $value) {
             echo '<b>' . $value['zone'] . '</b><br/>';
             $image = Yii::app()->baseUrl . '/zone%20image/' . $value['zone_img'];
-            echo "<img src=".$image." ><br/>" ;
+            echo "<img src=".$image." ><br/><br/>" ;
         }
     ?>
 </div>

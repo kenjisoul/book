@@ -40,6 +40,8 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
                             'value' => date('d / m / Y'),
                         ),
                     ));
+                    echo $form->error($model, 'C_time');
+                    echo $form->error($model, 'drpMinute');
                     ?>
                 </td>
             </tr>
@@ -51,8 +53,8 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
                 <th >จำนวนที่ว่าง</th>
             </tr>
             <tr>
-                <td>
-                    <div id="hour">
+                <td valign="top">
+                    <div id="hour" >
                         <?php
                         echo $form->dropDownList($model, 'C_time', $this->HH(), array(
                             'class' => 'input-small',
@@ -62,14 +64,15 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
                                 'url' => CController::createUrl('Customers/MM'),
                                 'update' => '#Customers_drpMinute',
                                 'data' => array('hour' => 'js:this.value'),
-                            ), 'multiple' => true,
-                            'style' => 'height:180px;'
+                            ),
+                            'multiple' => true,
+                            'style' => 'height:180px;',
                         ));
                         ?>
                     </div>
                 </td>
                 <td></td>
-                <td>
+                <td valign="top">
                     <div id="minute">
                         <?php
                         echo $form->dropDownList($model, 'drpMinute', array('empty' => 'เลือก'), array('class' => 'input-small',
@@ -78,12 +81,13 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
                                 'url' => CController::createUrl('Customers/All'),
                                 'update' => '#seats',
                                 'data' => array(
-                                    'jdate' => 'js:$("#Customers_jdate").val()', 
-                                    'hour' => 'js:$("#C_time").val()', 
+                                    'jdate' => 'js:$("#Customers_jdate").val()',
+                                    'hour' => 'js:$("#C_time").val()',
                                     'minutes' => 'js:this.value'
-                                    ),
+                                ),
                             ),
-                            'multiple' => true, 'style' => 'height:180px;')
+                            'multiple' => true,
+                            'style' => 'height:180px;')
                         );
                         ?>
                     </div>
@@ -93,17 +97,18 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
                     <div id="seats">
                         <table border="1" width="100%" style="text-align: center">
                             <tr style="background-color: gainsboro">
+                                <td width="25%"><b>โซน</b></td>
                                 <td width="50%"><b>จำนวนที่นั่ง (คน / โต๊ะ)</b></td>
-                                <td width="50%"><b>ว่าง (โต๊ะ)</b></td>
+                                <td width="25%"><b>ว่าง (โต๊ะ)</b></td>
                             </tr>
                         </table>
                     </div>
                     </tb>
             </tr>
             <tr>
-                <td><?php echo $form->error($model, 'C_time'); ?></td>
+                <td><?php  ?></td>
                 <td></td>
-                <td><?php echo $form->error($model, 'drpMinute'); ?></td>
+                <td><?php  ?></td>
                 <td></td>
                 <td ></td>
             </tr>
