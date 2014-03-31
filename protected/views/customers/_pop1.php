@@ -8,7 +8,7 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array('id' => 'call
     <thead>
         <tr>
             <th width="20%" style="color: #0080ee">ชื่อ</th>
-            <th width="20%" style="color: #0080ee">จำนวนคน</th>
+            <th width="20%" style="color: #0080ee">รายละเอียดการจอง</th>
             <th width="20%" style="color: #0080ee">เวลา</th>
             <th width="20%" style="color: #0080ee">PIN</th>
             <th style="color: #0080ee">เลือก</th>
@@ -25,7 +25,7 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array('id' => 'call
                 foreach ($rs as $value) {
                     ?>
                     <td width = "20%" ><?php echo $value['C_name']; ?></td>
-                    <td width = "20%" ><?php echo $value['C_seats']; ?></td>
+                    <td width = "20%" align="left"><?php ShowBookingTableDetails($value['C_seats']); ?></td>
                     <td width = "20%" ><?php echo $value['C_time']; ?></td>
                     <td width = "20%" ><?php echo $value['PIN']; ?></td>
                     <td width = "20%" ><?php echo $form->checkbox($model, 'callbox', array('value' => $value["PIN"])); ?></td>

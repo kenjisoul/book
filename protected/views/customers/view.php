@@ -1,4 +1,5 @@
 <?php
+include 'functions.php';
 $this->breadcrumbs = array(
     'Accounts' => array('index'),
 );
@@ -29,7 +30,7 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
         </tr>
         <tr class="even">
             <th> <?php echo $form->label($model, 'C_seats'); ?> </th>
-            <td> <?php echo $seat . ' ท่าน'; ?> </td>
+            <td> <?php echo ShowBookingTableDetails($seat); ?> </td>
         </tr>
         <tr class="odd">
             <th> <?php echo $form->label($model, 'PIN'); ?> </th>

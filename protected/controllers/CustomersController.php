@@ -68,7 +68,7 @@ class CustomersController extends Controller {
 //admin.php
     public function actionAdmin() {
         $model = new Customers();
-        if (isset($_POST['submit'])) {
+        if (isset($_POST['submit_active'])) {
             $model->attributes = $_POST['Customers'];
             $PIN = $model->PIN;
             $model->setActive($PIN);
@@ -175,18 +175,6 @@ class CustomersController extends Controller {
         }
         return ($data + 1);
     }
-
-//Get restaurant name use for if have many restaurant
-    /*    public function restaurant() {
-      $r_model = new Restaurant();
-      $rs = $r_model->getName();
-      $data = array();
-      foreach ($rs as $value) {
-      $data[] = $value;
-      }
-      return $data;
-      }
-     */
 
 //Get restaurant seat per table
     public function getSeat() {
@@ -321,7 +309,6 @@ class CustomersController extends Controller {
                 }
             }
 
-            print_r($tmp);
             if ($check_table != 0) {
                 foreach ($tmp as $value) {
                     $count_loop = 0;
@@ -404,5 +391,4 @@ class CustomersController extends Controller {
         date_default_timezone_set("Asia/Bangkok");
         return date("H:i");
     }
-
 }

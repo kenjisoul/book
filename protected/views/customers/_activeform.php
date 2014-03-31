@@ -1,8 +1,12 @@
+<?php
+include 'functions.php';
+?>
+
 <table width="100%" border="0" class="items table-striped table-condensed">
     <thead>
         <tr>
             <th width="20%" style="color: #0080ee">ชื่อ</th>
-            <th width="20%" style="color: #0080ee">จำนวนคน</th>
+            <th width="20%" style="color: #0080ee">รายละเอียดการจอง</th>
             <th width="20%" style="color: #0080ee">เวลา</th>
             <th width="20%" style="color: #0080ee">PIN</th>
             <th></th>
@@ -18,8 +22,8 @@
             } else {
                 ?>
                 <td width = "20%" ><?php echo $rs['C_name']; ?></td>
-                <td width = "20%" ><?php echo $rs['C_seats']; ?></td>
-                <td width = "20%" ><?php echo $rs['C_time']; ?></td>
+                <td width = "30%" align="left"><?php ShowBookingTableDetails($rs['C_seats']); ?></td>
+                <td width = "10%"><?php echo $rs['C_time']; ?></td>
                 <td width = "20%" ><?php echo $rs['PIN']; ?></td>
                 <td width = "20%">
                     <?php
@@ -33,10 +37,10 @@
                         $this->widget('bootstrap.widgets.TbButton', array(
                             'type' => '',
                             'id' => 'active',
-                            'label' => 'ยืนยันการจอง',
+                            'label' => 'ยืนยัน',
                             'buttonType' => 'submit',
                             'htmlOptions' => array(
-                                'name' => 'submit',
+                                'name' => 'submit_active',
                             ),
                         ));
                     }

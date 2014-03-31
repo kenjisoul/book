@@ -11,7 +11,8 @@ $this->widget('bootstrap.widgets.TbGridView', array(
         ),
         array(
             'name' => 'C_seats',
-            'header' => 'จำนวน',
+            'header' => 'รายละเอียดการจอง',
+            'value' => 'ShowBookingTableDetails($data->C_seats)',
         ),
         array(
             'name' => 'C_time',

@@ -45,7 +45,7 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
         <thead>
             <tr>
                 <th width="20%" style="color: #0080ee">ชื่อ</th>
-                <th width="20%" style="color: #0080ee">จำนวนคน</th>
+                <th width="20%" style="color: #0080ee">รายละเอียดการจอง</th>
                 <th width="20%" style="color: #0080ee">เวลา</th>
                 <th width="20%" style="color: #0080ee">PIN</th>
                 <th></th>

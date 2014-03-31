@@ -10,6 +10,7 @@
 </script> 
 
 <?php
+include 'functions.php';
 $this->breadcrumbs = array(
     'จัดการข้อมูลผู้จอง'
 );
@@ -176,7 +177,11 @@ $this->beginWidget('bootstrap.widgets.TbModal', array('id' => 'servicenonbook'))
 </div>
 
 <div class="modal-body">
-    <p>Non Booking</p>
+    <?php
+    $r_zone = new RZone();
+    $data = $r_zone->getName();
+    $this->renderpartial('index', array('model' => $model, 'namefield' => '', 'zone' => $data));
+    ?>
 </div>
 
 <div class="modal-footer">

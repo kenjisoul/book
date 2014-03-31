@@ -13,6 +13,7 @@
  * @property Restaurant $rName
  */
 class RZone extends CActiveRecord {
+
     /**
      * @return string the associated database table name
      */
@@ -108,6 +109,13 @@ class RZone extends CActiveRecord {
         $command = $connection->createCommand('SELECT MAX(Z_id) FROM r_zone');
         $result = $command->queryColumn();
         return $result[0];
+    }
+
+    public function getZone($Z_id) {
+        $connection = Yii::app()->db;
+        $command = $connection->createCommand('SELECT zone FROM r_zone WHERE Z_id =' . $Z_id);
+        $result = $command->queryAll();
+        return $result;
     }
 
 }

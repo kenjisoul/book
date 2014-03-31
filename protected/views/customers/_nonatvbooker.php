@@ -1,8 +1,9 @@
 <?php
+
 $this->widget('bootstrap.widgets.TbGridView', array(
     'type' => 'striped condensed',
     'enablePagination' => true,
-    'dataProvider' => Customers::model()->getBooker(0,0),
+    'dataProvider' => Customers::model()->getBooker(0, 0),
     'template' => "{pager}\n{items}\n",
     'columns' => array(
         array(
@@ -11,7 +12,9 @@ $this->widget('bootstrap.widgets.TbGridView', array(
         ),
         array(
             'name' => 'C_seats',
-            'header' => 'จำนวน',
+            'header' => 'รายละเอียดการจอง',
+            'value' => 'ShowBookingTableDetails($data->C_seats)',
+            'htmlOptions' => array('style' => 'text-align: left;')
         ),
         array(
             'name' => 'C_time',
