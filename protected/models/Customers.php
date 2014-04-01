@@ -115,11 +115,15 @@ class Customers extends CActiveRecord {
         ));
     }
 
-    public function book($C_name, $C_time, $C_seats, $PIN) {
+    public function book($C_name, $C_time, $C_seats, $PIN, $active = NULL, $call = NULL, $service = NULL) {
         $connection = Yii::app()->db;
         $Q_number = Customers::getQ();
         $restaurant = Restaurant::model()->getName();
-        $sql = 'INSERT INTO customers (Q_number, C_name, C_seats, C_time, PIN, R_name) VALUE ( ' . $Q_number . ', \'' . $C_name . '\', \'' . $C_seats . '\' , ' . $C_time . ', \'' . $PIN . '\',\'' . $restaurant[0]['name'] . '\')';
+        if ($active == NULL) {
+            $sql = 'INSERT INTO customers (Q_number, C_name, C_seats, C_time, PIN, R_name) VALUE ( ' . $Q_number . ', \'' . $C_name . '\', \'' . $C_seats . '\' , ' . $C_time . ', \'' . $PIN . '\',\'' . $restaurant[0]['name'] . '\')';
+        } else {
+            $sql = 'INSERT INTO customers (Q_number, C_name, C_seats, C_time, PIN, R_name, C_active, C_call, C_service) VALUE ( ' . $Q_number . ', \'' . $C_name . '\', \'' . $C_seats . '\' , ' . $C_time . ', \'' . $PIN . '\',\'' . $restaurant[0]['name'] . '\',' . $active . ',' . $call . ',' . $service . ')';
+        }
         $command = $connection->createCommand($sql);
         $command->execute();
     }
@@ -283,12 +287,6 @@ class Customers extends CActiveRecord {
             }
         }
         return TRUE;
-        /* if ($rs2['t'] <= $rs1['n']) {
-          $this->addError('status', 'วันที่ ' . $d . ' / ' . $m . ' / ' . $y . 'เวลา ' . $hr . ':' . $mins . 'นาฬิกา โต๊ะสำหรับ ' . $seats . ' ท่าน ' . ' เต็ม');
-          return FALSE;
-          } else {
-          return TRUE;
-          } */
     }
 
 //Convert minutes to hour.minute
@@ -317,7 +315,7 @@ class Customers extends CActiveRecord {
         $criteria = new CDbCriteria;
         $criteria->compare('C_active', $atv);
         $criteria->compare('C_service', $serv);
-        $criteria->compare('C_time >',$time);
+        $criteria->compare('C_time >', $time);
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
@@ -332,7 +330,7 @@ class Customers extends CActiveRecord {
         $connection = Yii::app()->db;
         date_default_timezone_set('Asia/Bangkok');
         $time = date('Y-m-d H:i:s');
-        $sql = 'SELECT * FROM customers WHERE PIN =\'' . $pin . '\''. 'and C_time >= \''.$time.'\';';
+        $sql = 'SELECT * FROM customers WHERE PIN =\'' . $pin . '\'' . 'and C_time >= \'' . $time . '\';';
         $command = $connection->createCommand($sql);
         return $command->queryRow();
     }

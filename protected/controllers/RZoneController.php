@@ -206,7 +206,7 @@ class RZoneController extends Controller {
         $images = Yii::app()->basePath . '/../zone image/' . $img;
         $size = GetimageSize($images);
         $new_images = Yii::app()->basePath . '/../zone image/tmp';
-        $width = 300; //*** Fix Width & Heigh (Autu caculate) ***//
+        $width = 400; //*** Fix Width & Heigh (Autu caculate) ***//
         $height = round($width * $size[1] / $size[0]);
         switch ($size['mime']) {
             case "image/gif":

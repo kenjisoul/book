@@ -1,7 +1,7 @@
 <?php
 include 'functions.php';
 $this->breadcrumbs = array(
-    'Accounts' => array('index'),
+    'Booking' => array('index'),
 );
 $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
     'id' => 'book',

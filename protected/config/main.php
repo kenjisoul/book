@@ -32,6 +32,7 @@ return array(
             // enable cookie-based authentication
             'allowAutoLogin' => true,
         ),
+        
         // uncomment the following to enable URLs in path-format
         /* 'urlManager'=>array(
           'urlFormat'=>'path',
@@ -71,14 +72,14 @@ return array(
           ),
           ),
           ), *//*
-        'log' => array(
-            'class' => 'CLogRouter',
-            'routes' => array(
-                array(
-                    'class' => 'ext.yii-debug-toolbar.YiiDebugToolbarRoute',
-                ),
-            ),
-        ),*/
+          'log' => array(
+          'class' => 'CLogRouter',
+          'routes' => array(
+          array(
+          'class' => 'ext.yii-debug-toolbar.YiiDebugToolbarRoute',
+          ),
+          ),
+          ), */
         'bootstrap' => array(
             'class' => 'bootstrap.components.Bootstrap',
         ),

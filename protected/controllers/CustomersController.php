@@ -72,8 +72,37 @@ class CustomersController extends Controller {
             $model->attributes = $_POST['Customers'];
             $PIN = $model->PIN;
             $model->setActive($PIN);
+        } elseif (isset($_POST['submit'])) {
+            $model->attributes = $_POST['Customers'];
+            $C_name = $model->C_name;
+            $hr = $model->C_time;
+            if ($hr < 10)
+                $hr = '0' . $hr;
+            $mins = $model->drpMinute;
+            $jdate = $model->jdate;
+            $d = substr($jdate, 0, 2);
+            $m = substr($jdate, 5, 2);
+            $y = substr($jdate, 10, 4);
+            $C_time = $y . $m . $d . (string) $hr . $mins . "00";
+            $C_seats = $model->C_seats;
+            $seats_tmp = NULL;
+            foreach ($C_seats as $value) {
+                if ($value != NULL && $seats_tmp == NULL) {
+                    $seats_tmp = $value;
+                } else if ($value != NULL && $seats_tmp != NULL) {
+                    $seats_tmp = $seats_tmp . ',' . $value;
+                }
+            }
+            if ($model->isAvailable($d, $m, $y, $hr, $mins, $seats_tmp)) {
+                $PIN = $this->generatePIN();
+                $model = new Customers();
+                $model->book($C_name, $C_time, $seats_tmp, $PIN, 1, 1, 1);
+                $this->render('_viewbookingnow', array('model' => $model, 'name' => $C_name, 'jdate' => $d . ' / ' . $m . ' / ' . $y, 'time' => $hr . ':' . $mins . ' นาฬิกา', 'seat' => $seats_tmp, 'PIN' => $PIN));
+                //$this->redirect(array('_viewbookingnow', 'name' => $C_name, 'jdate' => $d . ' / ' . $m . ' / ' . $y, 'time' => $hr . ':' . $mins . ' นาฬิกา', 'seat' => $seats_tmp, 'PIN' => $PIN));
+            }
+        } else {
+            $this->render('admin', array('model' => $model));
         }
-        $this->render('admin', array('model' => $model));
     }
 
 //view.php
@@ -293,7 +322,7 @@ class CustomersController extends Controller {
                 'disabled' => true,
             ));
         } else {
-//get available table
+            //get available table
             $list = $model->getAvailable($d, $m, $y, $hr, $min);
             $check_table = 0;
             foreach ($list as $value) {
@@ -391,4 +420,5 @@ class CustomersController extends Controller {
         date_default_timezone_set("Asia/Bangkok");
         return date("H:i");
     }
+
 }

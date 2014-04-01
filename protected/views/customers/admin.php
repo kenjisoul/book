@@ -10,7 +10,7 @@
 </script> 
 
 <?php
-include 'functions.php';
+require_once 'functions.php';
 $this->breadcrumbs = array(
     'จัดการข้อมูลผู้จอง'
 );
@@ -89,7 +89,9 @@ $this->beginWidget('bootstrap.widgets.TbModal', array('id' => 'call'));
 </div>
 
 <div class="modal-body">
-    <?php $this->renderpartial('_pop1', array('model' => $model)); ?>
+    <?php
+    $this->renderpartial('_pop1', array('model' => $model));
+    ?>
 </div>
 
 <div class="modal-footer">
@@ -177,22 +179,10 @@ $this->beginWidget('bootstrap.widgets.TbModal', array('id' => 'servicenonbook'))
 </div>
 
 <div class="modal-body">
-    <?php
-    $r_zone = new RZone();
-    $data = $r_zone->getName();
-    $this->renderpartial('index', array('model' => $model, 'namefield' => '', 'zone' => $data));
-    ?>
+    <?php $this->renderpartial('_pop3', array('model' => $model)); ?>
 </div>
 
 <div class="modal-footer">
-    <?php
-    $this->widget('bootstrap.widgets.TbButton', array(
-        'type' => 'primary',
-        'label' => 'Save changes',
-        'url' => '#',
-        'htmlOptions' => array('data-dismiss' => 'modal'),
-    ));
-    ?>
     <?php
     $this->widget('bootstrap.widgets.TbButton', array(
         'label' => 'Close',
