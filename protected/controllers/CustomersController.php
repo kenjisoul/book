@@ -72,6 +72,7 @@ class CustomersController extends Controller {
             $model->attributes = $_POST['Customers'];
             $PIN = $model->PIN;
             $model->setActive($PIN);
+            $this->render('admin', array('model' => $model));
         } elseif (isset($_POST['submit'])) {
             $model->attributes = $_POST['Customers'];
             $C_name = $model->C_name;
@@ -109,6 +110,16 @@ class CustomersController extends Controller {
     public function actionView($name, $jdate, $time, $seat, $PIN) {
         $model = new Customers();
         $this->render('view', array('model' => $model, 'name' => $name, 'jdate' => $jdate, 'time' => $time, 'seat' => $seat, 'PIN' => $PIN));
+    }
+
+    public function actionCancel() {
+        $model = new Customers();
+        if (isset($_POST['submit_cancel'])) {
+            $model->attributes = $_POST['Customers'];
+            $PIN = $model->PIN;
+            $model->cancel($PIN);
+        }
+        $this->render('cancel', array('model' => $model));
     }
 
 //chechk.php
@@ -382,6 +393,143 @@ class CustomersController extends Controller {
                     'disabled' => true,
                 ));
             }
+        }
+    }
+
+//Check booking details status
+    public function actionCheck_booking_status() {
+        $jdate = $_POST['jdate'];
+        $d = substr($jdate, 0, 2);
+        $m = substr($jdate, 5, 2);
+        $y = substr($jdate, 10, 4);
+        $hr = $_POST['hour'];
+        if ($hr < 10) {
+            $hr = '0' . $hr;
+        }
+        $min = $_POST['minutes'];
+        $pin = $_POST['pin'];
+        $table_amount = $_POST['table_amount'];
+        $model = new Customers();
+        if ($pin == NULL || $hr == NULL || $min == NULL || $jdate == NULL || $table_amount == NULL) {
+            ?>
+            <font color="red" >
+            <?php echo 'กรุณากรอกข้อมูลให้ครับถ้วน'; ?>
+            </font>
+            <?php
+            echo '</br>';
+            echo '</br>';
+            $this->widget('bootstrap.widgets.TbButton', array(
+                'label' => 'ยกเลิกการจอง',
+                'buttonType' => 'submit',
+                'htmlOptions' => array(
+                    'name' => 'submit_cancel',
+                ),
+                'disabled' => true,
+            ));
+        } else {
+            //get booking Details table
+            $list = $model->checkBooker($pin);
+            if ($list != NULL) {
+                $time = $y . '-' . $m . '-' . $d . ' ' . (string) $hr . ':' . $min . ":00";
+                $tmp[] = $list;
+                $tmp2 = $model->splitcommaZoneTableString($tmp);
+                $count_table = 0;
+                foreach ($tmp2 as $value) {
+                    $count_table++;
+                }
+                if ($list['C_active'] == 1) {
+                    echo "<font color=\"red\">รายการจองนี้ได้ทำการยืนยันตัวตนแล้ว ไม่สามารถยกเลิกได้</font>";
+                    echo '<br/><br/>';
+                    $this->widget('bootstrap.widgets.TbButton', array(
+                        'label' => 'ยกเลิกการจอง',
+                        'buttonType' => 'submit',
+                        'htmlOptions' => array(
+                            'name' => 'submit_cancel',
+                        ),
+                        'disabled' => true,
+                    ));
+                } elseif ($list['C_time'] === $time && $table_amount == $count_table) {
+                    echo "<font color=\"green\">ข้อมูลถูกต้อง กรุณายืนยันยกเลิกการจอง</font>";
+                    echo '<br/><br/>';
+                    $this->widget('bootstrap.widgets.TbButton', array(
+                        'label' => 'ยกเลิกการจอง',
+                        'buttonType' => 'submit',
+                        'htmlOptions' => array(
+                            'name' => 'submit_cancel',
+                        ),
+                    ));
+                } else {
+                    echo "<font color=\"red\">ข้อมูลไม่ถูกต้อง!</font>";
+                    echo '<br/><br/>';
+                    $this->widget('bootstrap.widgets.TbButton', array(
+                        'label' => 'ยกเลิกการจอง',
+                        'buttonType' => 'submit',
+                        'htmlOptions' => array(
+                            'name' => 'submit_cancel',
+                        ),
+                        'disabled' => true,
+                    ));
+                }
+            } else {
+                echo "<font color=\"red\">ไม่พบข้อมูลการจอง กรุณาใส่ PIN ให้ถูกต้อง!</font>";
+                echo '<br/>';
+                echo '<br/>';
+                $this->widget('bootstrap.widgets.TbButton', array(
+                    'label' => 'ยกเลิกการจอง',
+                    'buttonType' => 'submit',
+                    'htmlOptions' => array(
+                        'name' => 'submit_cancel',
+                    ),
+                    'disabled' => true,
+                ));
+            }
+            $booking_table_count = 0;
+
+            /*
+              if ($check_table != 0) {
+              foreach ($tmp as $value) {
+              $count_loop = 0;
+              foreach ($value as $tmp2) {
+              //echo zone name
+              if ($count_loop == 0) {
+              echo '<font size=5><b>' . $tmp2[0] . '</b></font> (ดูตำแหน่งที่นั่งได้จากรูป)<br/>';
+              }
+              echo '<b>สำหรับ ' . $tmp2[1] . ' ท่าน / โต๊ะ</b>';
+              $tmp3 = array_reverse($tmp2);
+              array_pop($tmp3);
+              array_pop($tmp3);
+              $tmp2 = array_reverse($tmp3);
+              echo $this->Widget('bootstrap.widgets.TbActiveForm')->checkBoxListInlineRow($model, 'C_seats[]', $tmp2, array('labelOptions' => array('label' => false)));
+              $count_loop++;
+              echo '<br/>';
+              }
+              $count_loop = 0;
+              echo '<br/>';
+              }
+              $this->widget('bootstrap.widgets.TbButton', array(
+              'label' => 'Book',
+              'buttonType' => 'submit',
+              'htmlOptions' => array(
+              'name' => 'submit',
+              ))
+              );
+              } else {
+              ?>
+              < span class = "required" >
+              <?php echo 'ขออภัย ขณะนี้โต๊ะเต็มหมดแล้วครับ' ?>
+              < /span>
+              <?php
+              echo '</br>';
+              echo '</br>';
+              $this->widget('bootstrap.widgets.TbButton', array(
+              'label' => 'Book',
+              'buttonType' => 'submit',
+              'htmlOptions' => array(
+              'name' => 'submit',
+              ),
+              'disabled' => true,
+              ));
+              } */
         }
     }
 

@@ -25,6 +25,7 @@
                         array('label' => 'หน้าหลัก', 'url' => array('/site/index')),
                         array('label' => 'จองคิว', 'url' => array('/customers/index')),
                         array('label' => 'ตรวจสอบ', 'url' => array('/customers/check')),
+                        array('label' => 'ยกเลิกการจอง', 'url' => array('/customers/cancel')),
                         array('label' => 'จัดการคิว', 'url' => array('/customers/admin'), 'visible' => !Yii::app()->user->isGuest),
                         array('label' => 'Login', 'url' => array('/site/login'), 'visible' => Yii::app()->user->isGuest),
                         array('label' => 'จัดการผู้ใช้', 'url' => array('/account/index'), 'visible' => Yii::app()->user->name == 'admin'),

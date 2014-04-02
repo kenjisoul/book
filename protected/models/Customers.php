@@ -26,6 +26,7 @@ class Customers extends CActiveRecord {
     public $servnonbookbox;
     public $jdate;
     public $seat;
+    public $num_of_booking_table;
 
     /**
      * @return string the associated database table name
@@ -46,8 +47,10 @@ class Customers extends CActiveRecord {
             array('jdate', 'required', 'message' => 'กรุณาเลือกวันที่'),
             array('C_time', 'required', 'message' => 'กรุณาเลือกเวลา'),
             array('drpMinute', 'required', 'message' => 'กรุณาเลือกนาที'),
-            array('Q_number, Z_id', 'numerical', 'integerOnly' => true),
+            array('num_of_booking_table', 'required', 'message' => 'กรุณาระบุจำนวนโต๊ะที่จองไว้'),
+            array('Q_number, Z_id, num_of_booking_tables', 'numerical', 'integerOnly' => true),
             array('PIN', 'length', 'max' => 4),
+            array('PIN', 'required'),
             array('C_name, R_name', 'length', 'max' => 255),
             // The following rule is used by search().
 // @todo Please remove those attributes that should not be searched.
@@ -81,7 +84,8 @@ class Customers extends CActiveRecord {
             'C_service' => 'C service',
             'R_name' => 'R Name',
             'jdate' => 'วันที่',
-            'Z_id' => 'Zone'
+            'Z_id' => 'Zone',
+            'num_of_booking_table' => 'จำนวนโต๊ะที่จอง'
         );
     }
 
@@ -390,6 +394,13 @@ class Customers extends CActiveRecord {
         } else {
             
         }
+    }
+
+    public function cancel($PIN) {
+        $connection = Yii::app()->db;
+        $sql = 'DELETE FROM ' . Customers::model()->tableName() . ' WHERE PIN = ' . $PIN . ';';
+        $command = $connection->createCommand($sql);
+        $command->execute();
     }
 
     /**
