@@ -20,28 +20,25 @@ $this->pageTitle = Yii::app()->name;
                 <table align="center" width="80%" border="1">
                     <?php
                     $calls = $this->getCalls();
-                    $i = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-                    foreach ($i as $va) {
-                        foreach ($calls as $value) {
-                            ?>
-                            <tr>
-                                <td width="50%" align="center">      
-                                    <h4>
-                                        <?php
-                                        echo $value['C_name'];
-                                        ?>
-                                    </h4>
-                                </td>
-                                <td align="center">
-                                    <h4>
-                                        <?php
-                                        echo$value['PIN'];
-                                        ?>
-                                    </h4>
-                                </td>
-                            </tr>
-                            <?php
-                        }
+                    foreach ($calls as $value) {
+                        ?>
+                        <tr>
+                            <td width="50%" align="center">      
+                                <h4>
+                                    <?php
+                                    echo $value['C_name'];
+                                    ?>
+                                </h4>
+                            </td>
+                            <td align="center">
+                                <h4>
+                                    <?php
+                                    echo$value['PIN'];
+                                    ?>
+                                </h4>
+                            </td>
+                        </tr>
+                        <?php
                     }
                     ?>
 
