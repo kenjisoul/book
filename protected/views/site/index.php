@@ -41,7 +41,6 @@ $this->pageTitle = Yii::app()->name;
                         <?php
                     }
                     ?>
-
                 </table>
             </marquee>
         </div>
