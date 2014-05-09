@@ -3,31 +3,61 @@
 
 $this->pageTitle = Yii::app()->name;
 ?>
+<div class="row" style="background: #eeeeff; -webkit-border-radius: 6px; -moz-border-radius: 6px; border-radius: 6px; color: inherit; padding-top: 10px;padding-bottom: 10px"">
+    <div class="span8">
+        <div class="hero-unit">
+            <h2 align="center">เชิญลูกค้าเข้ารับบริการ</h2>
+        </div>
+        <div >
+            <!-- Codes by HTML.am -->
+            <table align="center" width="80%" border="0">
+                <tr>
+                    <th width="50%"><h3>ชื่อผู้จอง</h3></th>
+                <th><h3>PIN</h3></th>
+                </tr>
+            </table>
+            <marquee behavior="scroll" direction="up" scrollamount="3">
+                <table align="center" width="80%" border="1">
+                    <?php
+                    $calls = $this->getCalls();
+                    $i = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+                    foreach ($i as $va) {
+                        foreach ($calls as $value) {
+                            ?>
+                            <tr>
+                                <td width="50%" align="center">      
+                                    <h4>
+                                        <?php
+                                        echo $value['C_name'];
+                                        ?>
+                                    </h4>
+                                </td>
+                                <td align="center">
+                                    <h4>
+                                        <?php
+                                        echo$value['PIN'];
+                                        ?>
+                                    </h4>
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                    }
+                    ?>
 
-<?php
-$this->beginWidget('bootstrap.widgets.TbHeroUnit', array(
-    'heading' => 'Welcome to ' . CHtml::encode(Yii::app()->name),
-));
-?>
+                </table>
+            </marquee>
+        </div>
+    </div>
 
-<p>Congratulations! You have successfully created your Yii application.</p>
-
-<?php $this->endWidget(); ?>
-
-<p>You may change the content of this page by modifying the following two files:</p>
-
-<ul>
-    <li>View file: <code><?php echo __FILE__; ?></code></li>
-    <li>Layout file: <code><?php echo $this->getLayoutFile('main'); ?></code></li>
-    USER = <?php echo Yii::app()->user->getId(); ?>
-</ul>
-
-<p>For more details on how to further develop this application, please read
-    the <a href="http://www.yiiframework.com/doc/">documentation</a>.
-    Feel free to ask in the <a href="http://www.yiiframework.com/forum/">forum</a>,
-    should you have any questions.</p>
-
-<?php
-$rs = Restaurant::model()->getName();
-echo $rs[0]['name'];
-?>
+    <div class="span4">
+        <div align="middle" style="background: #eeeeff; -webkit-border-radius: 6px;
+             -moz-border-radius: 6px; border-radius: 6px; color: inherit;
+             padding: 30px; margin-bottom: 30px;">
+            <h3>จำนวนที่ว่างปัจจุบัน</h3>
+            <?php
+            $this->getAll();
+            ?>
+        </div>
+    </div>
+</div>

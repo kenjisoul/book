@@ -8,7 +8,7 @@ Yii::setPathOfAlias('bootstrap', dirname(__FILE__) . '/../extensions/bootstrap')
 Yii::setPathOfAlias('widgets', dirname(__FILE__) . '/../extensions/widgets');
 return array(
     'basePath' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..',
-    'name' => 'My Web Application',
+    'name' => 'Restaurant Booking',
     // preloading 'log' component
     'preload' => array('log'),
     // autoloading model and component classes
