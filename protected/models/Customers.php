@@ -376,9 +376,6 @@ class Customers extends CActiveRecord {
         $sql = 'UPDATE ' . Customers::model()->tableName() . ' SET C_call = 1 WHERE PIN = ' . $pin . ';';
         $command = $connection->createCommand($sql);
         $command->execute();
-        $sql = 'INSERT INTO callqueue (PIN) VALUE ( \'' . $pin . '\' );';
-        $command = $connection->createCommand($sql);
-        $command->execute();
     }
 
 //set that PIN is serviced and remove show display
@@ -386,9 +383,6 @@ class Customers extends CActiveRecord {
         if ($pin != NULL) {
             $connection = Yii::app()->db;
             $sql = 'UPDATE ' . Customers::model()->tableName() . ' SET C_service = 1 WHERE PIN = ' . $pin . ';';
-            $command = $connection->createCommand($sql);
-            $command->execute();
-            $sql = 'DELETE FROM callqueue WHERE PIN = \'' . $pin . '\' ;';
             $command = $connection->createCommand($sql);
             $command->execute();
         } else {
